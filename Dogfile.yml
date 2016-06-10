@@ -1,0 +1,12 @@
+---
+- task: hello
+  description: Say Hello!
+  run: echo hello world
+
+- task: bye
+  description: Good Bye!
+  run: echo bye cruel world
+
+- task: find
+  description: List all files in $HOME directory
+  run: find /home/xavi
