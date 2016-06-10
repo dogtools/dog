@@ -1,4 +1,4 @@
-package main
+package dog
 
 import (
 	"bufio"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func execTask(task string, script []byte) (duration time.Duration) {
+func ExecTask(task string, script []byte) (duration time.Duration) {
 	// TODO check that parameters not empty
 
 	// Check that executor exists

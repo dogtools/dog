@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/xsb/dog/dog"
 )
 
 type task struct {
@@ -36,7 +38,7 @@ func main() {
 		// TODO check that task exists
 		task := taskList[arg].task
 		run := taskList[arg].run
-		duration := execTask(task, run)
+		duration := dog.ExecTask(task, run)
 		fmt.Println(duration.Seconds())
 	}
 }
