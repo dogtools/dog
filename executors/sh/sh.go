@@ -42,7 +42,7 @@ func (sh *Sh) Exec(t *dog.Task, w io.Writer) error {
 		return err
 	}
 
-	cmd := exec.Command(binary, string(t.Run))
+	cmd := exec.Command(binary, t.Path)
 	stdoutReader, err := cmd.StdoutPipe()
 	if err != nil {
 		return err
