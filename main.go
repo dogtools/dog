@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/xsb/dog/dog"
+	_ "github.com/xsb/dog/executors"
 )
 
 var taskList = map[string]dog.Task{
@@ -12,7 +13,7 @@ var taskList = map[string]dog.Task{
 		Name:        "hello",
 		Description: "Say Hello!",
 		Duration:    false,
-		Run:         []byte("echo hello world"),
+		Run:         []byte("echo \"hello world\""),
 	},
 	"bye": {
 		Name:        "bye",
@@ -35,8 +36,8 @@ func main() {
 			fmt.Printf("%s\t%s\n", k, t.Description)
 		}
 	} else {
-		// TODO check that task exists
 		task := taskList[arg]
-		dog.ExecTask(task)
+		e := dog.GetExecutor("sh")
+		e.Exec(&task, os.Stdout)
 	}
 }
