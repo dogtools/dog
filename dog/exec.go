@@ -9,8 +9,16 @@ import (
 	"time"
 )
 
-func ExecTask(task string, script []byte) (duration time.Duration) {
+type Task struct {
+	Name        string
+	Description string
+	Duration    bool
+	Run         []byte
+}
+
+func ExecTask(t Task) {
 	// TODO check that parameters not empty
+	var startTime time.Time
 
 	// Check that executor exists
 	binary, err := exec.LookPath("sh")
@@ -19,8 +27,8 @@ func ExecTask(task string, script []byte) (duration time.Duration) {
 	}
 
 	// Write the script to disk
-	path := "/tmp/dog-" + task + ".sh"
-	err = ioutil.WriteFile(path, script, 0644)
+	path := "/tmp/dog-" + t.Name + ".sh"
+	err = ioutil.WriteFile(path, t.Run, 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +49,9 @@ func ExecTask(task string, script []byte) (duration time.Duration) {
 	}()
 
 	// Start and wait until it finishes
-	startTime := time.Now()
+	if t.Duration {
+		startTime = time.Now()
+	}
 	err = cmd.Start()
 	if err != nil {
 		panic(err)
@@ -51,7 +61,10 @@ func ExecTask(task string, script []byte) (duration time.Duration) {
 	if err != nil {
 		panic(err)
 	}
-	duration = time.Now().Sub(startTime)
+	if t.Duration {
+		duration := time.Now().Sub(startTime)
+		fmt.Println(duration.Seconds())
+	}
 
 	// Remove temporary script
 	err = os.Remove(path)
@@ -59,5 +72,4 @@ func ExecTask(task string, script []byte) (duration time.Duration) {
 		panic(err)
 	}
 
-	return duration
 }
