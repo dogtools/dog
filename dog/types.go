@@ -5,10 +5,11 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ghodss/yaml"
-
 	"github.com/xsb/dog/util"
 )
+
+// TaskList is an array of Tasks
+type TaskList []Task
 
 // Task is a representation of a dogfile task.
 type Task struct {
@@ -17,32 +18,6 @@ type Task struct {
 	Duration    bool   `json:"duration,omitempty"`
 	Run         string `json:"run,omitempty"`
 	Path        string `json:"path,omitempty"`
-}
-
-type taskList []Task
-
-// LoadDogFile finds a Dogfile in disk, parses YAML and returns a map
-func LoadDogFile() (tm map[string]Task, err error) {
-	var dat []byte
-	var tl taskList
-
-	dat, err = ioutil.ReadFile("Dogfile.yml")
-	if err != nil {
-		return
-	}
-
-	err = yaml.Unmarshal(dat, &tl)
-	if err != nil {
-		return
-	}
-
-	// TODO create the map while reading the Dogfile
-	tm = make(map[string]Task)
-	for _, t := range tl {
-		tm[t.Name] = t
-	}
-
-	return
 }
 
 // ToDisk saves the task command to a temp script.
