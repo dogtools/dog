@@ -2,6 +2,8 @@ package dog
 
 import (
 	"io/ioutil"
+	"os"
+	"regexp"
 
 	"github.com/ghodss/yaml"
 )
@@ -28,14 +30,37 @@ func ParseDogfile(d []byte) (tm TaskMap, err error) {
 
 // LoadDogFile finds a Dogfile in disk, parses YAML and returns a map
 func LoadDogFile() (tm TaskMap, err error) {
-	var dat []byte
+	const validDogfileName = "^(Dogfile|🐕)"
+	var dogfiles []os.FileInfo
+	var d []byte
 
-	dat, err = ioutil.ReadFile("Dogfile.yml")
+	files, err := ioutil.ReadDir(".")
 	if err != nil {
 		return
 	}
 
-	tm, err = ParseDogfile(dat)
+	for _, file := range files {
+		var match bool
+		match, err = regexp.MatchString(validDogfileName, file.Name())
+		if err != nil {
+			return
+		}
+
+		if match {
+			dogfiles = append(dogfiles, file)
+		}
+	}
+
+	for _, dogfile := range dogfiles {
+		var fileData []byte
+		fileData, err = ioutil.ReadFile(dogfile.Name())
+		if err != nil {
+			return
+		}
+		d = append(d, fileData...)
+	}
+
+	tm, err = ParseDogfile(d)
 	if err != nil {
 		return
 	}
