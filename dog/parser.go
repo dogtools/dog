@@ -16,7 +16,11 @@ func ParseDogfile(d []byte) (tm TaskMap, err error) {
 
 	tm = make(TaskMap)
 	for _, t := range tasks {
-		tm[t.Name] = t
+		if _, ok := tm[t.Name]; ok {
+			// TODO (duplicated task name) fail and return a non-nil error
+		} else {
+			tm[t.Name] = t
+		}
 	}
 
 	return
