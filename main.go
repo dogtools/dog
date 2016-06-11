@@ -14,7 +14,7 @@ func printHelp() {
 	fmt.Println("Dog Help")
 }
 
-func printTaskList(tm map[string]dog.Task) {
+func printTaskList(tm dog.TaskMap) {
 	for k, t := range tm {
 		fmt.Printf("%s\t%s\n", k, t.Description)
 	}

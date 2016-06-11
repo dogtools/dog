@@ -11,7 +11,7 @@ import (
 // TaskList is an array of Tasks
 type TaskList []Task
 
-// Task is a representation of a dogfile task.
+// Task is a representation of a dogfile task
 type Task struct {
 	Name        string `json:"task,omitempty"`
 	Description string `json:"description,omitempty"`
@@ -19,6 +19,9 @@ type Task struct {
 	Run         string `json:"run,omitempty"`
 	Path        string `json:"path,omitempty"`
 }
+
+// TaskMap is a map in which the key is a task name and the value is a Task object
+type TaskMap map[string]Task
 
 // ToDisk saves the task command to a temp script.
 func (t *Task) ToDisk() error {
