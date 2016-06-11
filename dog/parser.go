@@ -7,16 +7,15 @@ import (
 )
 
 func ParseDogfile(d []byte) (tm TaskMap, err error) {
-	var tl TaskList
+	var tasks []Task
 
-	err = yaml.Unmarshal(d, &tl)
+	err = yaml.Unmarshal(d, &tasks)
 	if err != nil {
 		return
 	}
 
-	// TODO create the map while reading the Dogfile
 	tm = make(TaskMap)
-	for _, t := range tl {
+	for _, t := range tasks {
 		tm[t.Name] = t
 	}
 

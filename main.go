@@ -14,7 +14,7 @@ func printHelp() {
 	fmt.Println("Dog Help")
 }
 
-func printTaskList(tm dog.TaskMap) {
+func printTasks(tm dog.TaskMap) {
 	for k, t := range tm {
 		fmt.Printf("%s\t%s\n", k, t.Description)
 	}
@@ -29,7 +29,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		printTaskList(tm)
+		printTasks(tm)
 
 	// dog help
 	case len(os.Args) == 2 && os.Args[1] == "help":

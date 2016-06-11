@@ -8,9 +8,6 @@ import (
 	"github.com/xsb/dog/util"
 )
 
-// TaskList is an array of Tasks
-type TaskList []Task
-
 // Task is a representation of a dogfile task
 type Task struct {
 	Name        string `json:"task,omitempty"`
