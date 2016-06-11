@@ -1,10 +1,9 @@
----
 - task: build
   description: Build dog binary
   run: |
     [ -d bin ] || mkdir bin
     go get -u ./...
-    go build . -o bin/dog
+    go build -o bin/dog
 
 - task: clean
   description: Clean compiled binaries

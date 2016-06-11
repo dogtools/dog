@@ -25,7 +25,7 @@ func LoadDogFile() (tm map[string]Task, err error) {
 	var dat []byte
 	var tl TaskList
 
-	dat, err = ioutil.ReadFile("dogfile/testdata/Dogfile-basic.yml")
+	dat, err = ioutil.ReadFile("Dogfile.yml")
 	if err != nil {
 		return
 	}
