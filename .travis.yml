@@ -1,0 +1,17 @@
+language: go
+
+go:
+  - 1.6.2
+  - tip
+
+install:
+  - go get -t ./...
+  - go get github.com/golang/lint/golint
+
+script:
+  - diff <(echo -n) <(gofmt -s -d .)
+  - go vet ./...
+  - go test -v ./...
+
+after_script:
+  - golint ./...
