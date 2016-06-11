@@ -60,10 +60,5 @@ func LoadDogFile() (tm TaskMap, err error) {
 		d = append(d, fileData...)
 	}
 
-	tm, err = ParseDogfile(d)
-	if err != nil {
-		return
-	}
-
-	return
+	return ParseDogfile(d)
 }
