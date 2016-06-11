@@ -15,7 +15,7 @@ var executors = map[string]interface{}{}
 // RegisterExecutor adds an executor to the registry.
 func RegisterExecutor(cmd string, e interface{}) {
 	if _, found := executors[cmd]; found {
-		panic(AlreadyRegisteredErr)
+		panic(ErrAlreadyRegistered)
 	}
 	executors[cmd] = e
 }

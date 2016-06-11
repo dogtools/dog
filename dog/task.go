@@ -19,11 +19,12 @@ type Task struct {
 	Path        string `json:"path,omitempty"`
 }
 
-type TaskList []Task
+type taskList []Task
 
+// LoadDogFile finds a Dogfile in disk, parses YAML and returns a map
 func LoadDogFile() (tm map[string]Task, err error) {
 	var dat []byte
-	var tl TaskList
+	var tl taskList
 
 	dat, err = ioutil.ReadFile("Dogfile.yml")
 	if err != nil {
