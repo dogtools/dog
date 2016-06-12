@@ -102,6 +102,14 @@ They also accept arrays.
     - upload
 ```
 
+### workdir
+
+Sets the working directory for the task.
+
+```yml
+  workdir: app
+```
+
 ### tag
 
 Tags are used to group similar tasks.
