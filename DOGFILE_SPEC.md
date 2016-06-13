@@ -1,6 +1,6 @@
-# Dogfile Format Reference
+# Dogfile Soec
 
-This is a work in progress, almost none of this is implemented in `dog` yet. This document is a draft of the Dogfile format.
+This is a work in progress, almost none of this is implemented in `dog` yet. This document is a draft of the Dogfile Spec.
 
 [dog](https://github.com/xsb/dog) is a command line application that executes tasks. It's the first tool that uses Dogfiles and is developed at the same time as the Dogfile format itself.
 
@@ -22,7 +22,7 @@ Multiple Dogfiles in the same directory are processed together as a single entit
 
 ## Task definition
 
-The task map accepts the following keys.
+The task map accepts the following directives.
 
 ### task
 
@@ -183,9 +183,9 @@ Registers store the output of executed commands so chained tasks (using pre or p
   run: echo "I am $remoteUser when I ssh into remote-host-example.com"
 ```
 
-### Non standard keys
+### Non standard directives
 
-Optional keys that are not part of the Dogfile Format. Tools using Dogfiles and having special requirements can use their own keys that will be ignored by the tools that only follow the standard.
+Optional directives that are not part of the Dogfile Format. Tools using Dogfiles and having special requirements can use their own directives that will be ignored by the tools that only follow the standard.
 
 Any parameter starting by `x_` will simply be ignored.
 
