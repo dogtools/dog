@@ -27,9 +27,12 @@ func main() {
 	case len(os.Args) == 1:
 		tm, err := dog.LoadDogFile()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println("Error: No valid Dogfile in current directory")
+			fmt.Println("Need help? --> dog help")
+			fmt.Println("More info ---> https://github.com/xsb/dog")
+		} else {
+			printTasks(tm)
 		}
-		printTasks(tm)
 
 	// dog help
 	case len(os.Args) == 2 && os.Args[1] == "help":
