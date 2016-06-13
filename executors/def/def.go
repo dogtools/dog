@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/xsb/dog/dog"
 )
@@ -26,6 +27,8 @@ func NewDefaultExecutor(cmd string) *Default {
 // Exec executes the created tmp script and writes the output to the writer.
 func (def *Default) Exec(t *dog.Task, w io.Writer) error {
 	var err error
+	var startTime time.Time
+
 	if err = t.ToDisk(); err != nil {
 		return err
 	}
@@ -50,6 +53,10 @@ func (def *Default) Exec(t *dog.Task, w io.Writer) error {
 		return err
 	}
 
+	if t.Time {
+		startTime = time.Now()
+	}
+
 	if err = cmd.Start(); err != nil {
 		return err
 	}
@@ -59,6 +66,11 @@ func (def *Default) Exec(t *dog.Task, w io.Writer) error {
 		return err
 	}
 	w.Write([]byte("=== Task " + t.Name + " finished ===\n"))
+
+	if t.Time {
+		duration := time.Now().Sub(startTime)
+		w.Write([]byte(duration.String() + "\n"))
+	}
 
 	return nil
 }

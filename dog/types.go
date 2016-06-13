@@ -12,7 +12,7 @@ import (
 type Task struct {
 	Name        string `json:"task,omitempty"`
 	Description string `json:"description,omitempty"`
-	Duration    bool   `json:"duration,omitempty"`
+	Time        bool   `json:"time,omitempty"`
 	Run         string `json:"run,omitempty"`
 	Path        string `json:"path,omitempty"`
 }
