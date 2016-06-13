@@ -1,4 +1,4 @@
-# Dogfile Soec
+# Dogfile Spec
 
 This is a work in progress, almost none of this is implemented in `dog` yet. This document is a draft of the Dogfile Spec.
 
