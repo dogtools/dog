@@ -1,6 +1,5 @@
 - task: build
   description: Build dog binary
-  time: true
   run: |
     [ -d bin ] || mkdir bin
     go get -u ./...

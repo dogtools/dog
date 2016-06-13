@@ -58,14 +58,6 @@ Multiline scripts are supported.
     done
 ```
 
-### time
-
-Measure how much time it takes to run the task. Duration will be printed after the task output. Boolean parameter, the default value is `false`.
-
-```yml
-  time: true
-```
-
 ### type
 
 The default execution type is `sh` on UNIX-like operating systems and `cmd` on Windows, but other execution types will be supported.
