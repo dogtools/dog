@@ -2,10 +2,7 @@ package dog
 
 import (
 	"io/ioutil"
-	"math/rand"
-	"time"
-
-	"github.com/xsb/dog/util"
+	"os"
 )
 
 // Task is a representation of a dogfile task
@@ -21,13 +18,27 @@ type Task struct {
 // TaskMap is a map in which the key is a task name and the value is a Task object
 type TaskMap map[string]Task
 
-// ToDisk saves the task command to a temp script.
-func (t *Task) ToDisk() error {
-	t.Path = "/tmp/dog-" +
-		util.RandString(32, rand.NewSource(time.Now().UnixNano())) +
-		t.Name
-	if err := ioutil.WriteFile(t.Path, []byte(t.Run), 0644); err != nil {
-		return err
+func writeTempFile(dir, prefix string, data string, perm os.FileMode) (*os.File, error) {
+	f, err := ioutil.TempFile(dir, prefix)
+	if err != nil {
+		return f, err
 	}
-	return nil
+
+	if err = f.Chmod(perm); err != nil {
+		return f, err
+	}
+
+	_, err = f.WriteString(data)
+	return f, err
+}
+
+// ToDisk saves the task command to a temp script.
+func (t *Task) ToDisk() (err error) {
+	f, err := writeTempFile("", "dog", t.Run, 0644)
+
+	if err == nil {
+		t.Path = f.Name()
+	}
+
+	return
 }
