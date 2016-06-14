@@ -49,8 +49,13 @@ func main() {
 
 		if _, ok := tm[taskName]; ok {
 			task := tm[taskName]
-			e := dog.GetExecutor("system")
-			e.Exec(&task, os.Stdout)
+			e := dog.GetExecutor(task.Executor)
+			if e == nil {
+				e = dog.GetExecutor("system")
+			}
+			if err := e.Exec(&task, os.Stdout); err != nil {
+				fmt.Println(err)
+			}
 		} else {
 			fmt.Println("No task named " + taskName)
 		}

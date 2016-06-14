@@ -10,10 +10,12 @@ import (
 
 // Task is a representation of a dogfile task
 type Task struct {
-	Name        string `json:"task,omitempty"`
+	Name        string `json:"task"`
 	Description string `json:"description,omitempty"`
-	Run         string `json:"run,omitempty"`
-	Path        string `json:"path,omitempty"`
+	Time        bool   `json:"time,omitempty"`
+	Run         string `json:"run"`
+	Executor    string `json:"executor"`
+	Path        string `json:"-"`
 }
 
 // TaskMap is a map in which the key is a task name and the value is a Task object
