@@ -14,7 +14,7 @@ type Task struct {
 	Description string `json:"description,omitempty"`
 	Time        bool   `json:"time,omitempty"`
 	Run         string `json:"run"`
-	Executor    string `json:"executor"`
+	Executor    string `json:"exec"`
 	Path        string `json:"-"`
 }
 

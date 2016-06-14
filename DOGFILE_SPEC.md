@@ -58,12 +58,12 @@ Multiline scripts are supported.
     done
 ```
 
-### type
+### exec
 
-The default execution type is `sh` on UNIX-like operating systems and `cmd` on Windows, but other execution types will be supported.
+The default executor is `sh` on UNIX-like operating systems and `cmd` on Windows, but other executors will be supported.
 
 ```yml
-  type: ruby
+  exec: ruby
   run: |
     hello = "Hello Dog!"
     puts hello
@@ -140,7 +140,7 @@ We can also tag our most important tasks to be highlighted at the top of the lis
 
 ### parameters
 
-Additional parameters can be provided to the task that will be executed. Only works with shell-based executor types.
+Additional parameters can be provided to the task that will be executed. Only works with shell-based executors.
 
 ```yml
   parameters:
