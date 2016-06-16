@@ -1,0 +1,4 @@
+- task: ruby-puts
+  description: Ruby puts says hello
+  exec: ruby
+  run: puts "Hello Dog from Ruby!"

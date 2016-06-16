@@ -8,3 +8,7 @@
 - task: clean
   description: Clean compiled binaries
   run: rm -rf bin
+
+- task: run-test-dogfiles
+  description: Run all Tasks in testdata Dogfiles
+  run: ./scripts/test-dogfiles.sh

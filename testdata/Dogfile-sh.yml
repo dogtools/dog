@@ -1,0 +1,16 @@
+- task: sh-echo
+  description: Shell says hello
+  run: echo "Hello Dog from sh!"
+
+- task: sh-count-animals
+  description: Count animals
+  run: |
+    mammals="dog cat dolphin dog cat human dog dog cat"
+    reptiles="crocodile lizard snake"
+    birds="owl eagle owl"
+
+    echo "$mammals $reptiles $birds" \
+      | tr ' ' '\n' \
+      | sort \
+      | uniq -c \
+      | sort -nr
