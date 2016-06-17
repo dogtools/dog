@@ -1,8 +1,7 @@
 package executor
 
 import (
-	"fmt"
-	"io"
+	"bufio"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -50,12 +49,17 @@ func NewExecutor(cmd string) *Executor {
 }
 
 // Exec executes the created tmp script and writes the output to the writer.
-func (ex *Executor) Exec(t *types.Task, w io.Writer) error {
-
+func (ex *Executor) Exec(t *types.Task, eventsChan chan *types.Event) error {
 	f, err := writeTempFile("", "dog", t.Run, 0644)
 	if err != nil {
 		return err
 	}
+
+	defer func() {
+		if err := os.Remove(f.Name()); err != nil {
+			eventsChan <- types.NewOutputEvent(t.Name, []byte(err.Error()))
+		}
+	}()
 
 	binary, err := exec.LookPath(ex.cmd)
 	if err != nil {
@@ -64,10 +68,18 @@ func (ex *Executor) Exec(t *types.Task, w io.Writer) error {
 
 	cmd := exec.Command(binary, f.Name())
 
-	w.Write([]byte(" - " + t.Name + " started\n"))
+	if err := gatherCmdOutput(t.Name, cmd, eventsChan); err != nil {
+		return err
+	}
+
+	if err := cmd.Start(); err != nil {
+		return nil
+	}
+
+	eventsChan <- types.NewStartEvent(t.Name)
 
 	statusCode := 0
-	if output, err := cmd.CombinedOutput(); err != nil {
+	if err := cmd.Wait(); err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			if waitStatus, ok := exitError.Sys().(syscall.WaitStatus); !ok {
 				// For unknown error status codes set it to 1
@@ -76,18 +88,37 @@ func (ex *Executor) Exec(t *types.Task, w io.Writer) error {
 				statusCode = waitStatus.ExitStatus()
 			}
 		}
-		w.Write(output)
-		w.Write([]byte("\n" + err.Error() + "\n"))
-	} else {
-		w.Write(output)
 	}
 
-	msg := fmt.Sprintf(" - %s finished with status code %d\n", t.Name, statusCode)
-	w.Write([]byte(msg))
+	eventsChan <- types.NewEndEvent(t.Name, statusCode)
 
-	if err := os.Remove(f.Name()); err != nil {
+	return nil
+}
+
+func gatherCmdOutput(taskName string, cmd *exec.Cmd, eventsChan chan *types.Event) error {
+	stdoutReader, err := cmd.StdoutPipe()
+	if err != nil {
 		return err
 	}
+
+	stderrReader, err := cmd.StderrPipe()
+	if err != nil {
+		return err
+	}
+
+	stdoutScanner := bufio.NewScanner(stdoutReader)
+	stderrScanner := bufio.NewScanner(stderrReader)
+	go func() {
+		for stdoutScanner.Scan() {
+			eventsChan <- types.NewOutputEvent(taskName, stdoutScanner.Bytes())
+		}
+	}()
+
+	go func() {
+		for stderrScanner.Scan() {
+			eventsChan <- types.NewOutputEvent(taskName, stderrScanner.Bytes())
+		}
+	}()
 
 	return nil
 }

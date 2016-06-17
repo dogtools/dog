@@ -1,3 +1,11 @@
+- task: sh-blank-lines
+  description: Output with blank lines
+  run: |
+    for i in $(seq 1 5); do
+      echo 
+      echo $i
+    done
+
 - task: sh-echo
   description: Shell says hello
   run: echo "Hello Dog from sh!"

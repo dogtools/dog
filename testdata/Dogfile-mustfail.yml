@@ -1,0 +1,4 @@
+- task: must-fail
+  description: A task that fails
+  exec: ruby
+  run: putss "I fail"
