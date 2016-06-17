@@ -1,11 +1,11 @@
-- task: pretask
+- task: pre-task
   run: echo "I am a prehook"
 
-- task: posttask
+- task: post-task
   run: echo "I am a post hook"
 
-- task: starttask
-  description: Count animals
-  pre: pretask
-  post: posttask
+- task: task-with-hooks
+  description: Run a task with pre and post hooks
+  pre: pre-task
+  post: post-task
   run: echo "I am the main task"

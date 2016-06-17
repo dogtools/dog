@@ -8,8 +8,8 @@ Roadmap for v0.1:
 - [x] Support multiple languages
 - [x] Allow multiple Dogfiles per directory
 - [x] Show status code after running a task
+- [x] Pre-hooks and post-hooks
 - [ ] Pass environment variables to tasks
-- [ ] Pre-hooks and post-hooks
 
 ## What is a Dogfile?
 
@@ -22,6 +22,7 @@ This is Dog's own Dogfile.yml:
 ```yml
 - task: build
   description: Build dog binary
+  pre: clean
   run: |
     [ -d bin ] || mkdir bin
     go get -u ./...

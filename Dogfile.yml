@@ -1,5 +1,6 @@
 - task: build
   description: Build dog binary
+  pre: clean
   run: |
     [ -d bin ] || mkdir bin
     go get -u ./...
