@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -10,7 +11,7 @@ import (
 )
 
 func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
-	var tasks []types.Task
+	var tasks []*types.Task
 
 	err = yaml.Unmarshal(d, &tasks)
 	if err != nil {
@@ -20,8 +21,23 @@ func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
 	tm = make(types.TaskMap)
 	for _, t := range tasks {
 		if _, ok := tm[t.Name]; ok {
-			// TODO (duplicated task name) fail and return a non-nil error
+			return tm, fmt.Errorf("Duplicated task name %s", t.Name)
 		} else {
+			if pre, ok := t.Pre.(string); ok {
+				t.Pre = []string{pre}
+			} else if t.Pre == nil {
+				t.Pre = []string{}
+			} else if _, ok = t.Pre.([]string); !ok {
+				return tm, fmt.Errorf("Invalid pre for task %s", t.Name)
+			}
+
+			if post, ok := t.Post.(string); ok {
+				t.Post = []string{post}
+			} else if t.Post == nil {
+				t.Post = []string{}
+			} else if _, ok = t.Post.([]string); !ok {
+				return tm, fmt.Errorf("Invalid post for task %s", t.Name)
+			}
 			tm[t.Name] = t
 		}
 	}

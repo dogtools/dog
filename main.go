@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/xsb/dog/executor"
+	"github.com/xsb/dog/execute"
 	"github.com/xsb/dog/parser"
 	"github.com/xsb/dog/types"
 )
@@ -50,47 +50,12 @@ func main() {
 			os.Exit(1)
 		}
 
-		if task, ok := tm[taskName]; ok {
-			ec := make(chan *types.Event)
-
-			var e *executor.Executor
-			if task.Executor != "" {
-				e = executor.NewExecutor(task.Executor)
-			} else {
-				e = executor.SystemExecutor
-			}
-
-			go func() {
-				if err := e.Exec(&task, ec); err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-			}()
-
-			for {
-				select {
-				case event := <-ec:
-					switch event.Name {
-					case "start":
-						fmt.Println(" - " + event.Task + " started")
-					case "output":
-						if body, ok := event.Extras["body"].([]byte); ok {
-							fmt.Println(string(body))
-						}
-					case "end":
-						if statusCode, ok := event.Extras["statusCode"].(int); ok {
-							fmt.Println(
-								fmt.Sprintf(" - %s finished with status code %d", event.Task, statusCode),
-							)
-							os.Exit(statusCode)
-						}
-						os.Exit(1)
-					}
-				}
-			}
-		} else {
-			fmt.Println("No task named " + taskName)
+		runner, err := execute.NewRunner(tm)
+		if err != nil {
+			fmt.Println(err)
 			os.Exit(1)
 		}
+
+		runner.Run(taskName)
 	}
 }
