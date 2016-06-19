@@ -13,48 +13,54 @@ type runner struct {
 	eventsChan    chan *types.Event
 }
 
+func generateChainFor(t *types.Task, tm types.TaskMap) ([]*types.Task, error) {
+	chain := []*types.Task{}
+	if pres, ok := t.Pre.([]string); ok {
+		for _, preName := range pres {
+			pre, found := tm[preName]
+			if !found {
+				return nil, errors.New(
+					"Task " + preName + " does not exist",
+				)
+			}
+			preChain, err := generateChainFor(pre, tm)
+			if err != nil {
+				return nil, err
+			}
+			chain = append(chain, preChain...)
+		}
+	}
+
+	chain = append(chain, t)
+
+	if posts, ok := t.Post.([]string); ok {
+		for _, postName := range posts {
+			post, found := tm[postName]
+			if !found {
+				return []*types.Task{}, errors.New(
+					"Task " + postName + " does not exist",
+				)
+			}
+			postChain, err := generateChainFor(post, tm)
+			if err != nil {
+				return nil, err
+			}
+			chain = append(chain, postChain...)
+		}
+	}
+
+	return chain, nil
+}
+
 func buildHierarchy(tm types.TaskMap) (map[string][]*types.Task, error) {
 	th := make(map[string][]*types.Task, len(tm))
 
 	for n, t := range tm {
-		i := 0
-
-		pres, ok := t.Pre.([]string)
-		if !ok {
-			return th, errors.New("Invalid pre directive")
+		chain, err := generateChainFor(t, tm)
+		if err != nil {
+			return nil, err
 		}
-
-		posts, ok := t.Post.([]string)
-		if !ok {
-			return th, errors.New("Invalid post directive")
-		}
-
-		th[n] = make([]*types.Task, len(pres)+len(posts)+1)
-
-		for _, preName := range pres {
-			pre, found := tm[preName]
-			if !found {
-				return th, errors.New(
-					"Task " + preName + " does not exist",
-				)
-			}
-			th[n][i] = pre
-			i++
-		}
-
-		th[n][i] = t
-		i++
-
-		for _, postName := range posts {
-			post, found := tm[postName]
-			if !found {
-				return th, errors.New(
-					"Task " + postName + " does not exist",
-				)
-			}
-			th[n][i] = post
-			i++
-		}
+		th[n] = chain
 	}
 
 	return th, nil

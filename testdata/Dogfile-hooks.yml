@@ -2,7 +2,11 @@
   run: echo "I am a prehook"
 
 - task: post-task
+  post: post-task-2
   run: echo "I am a post hook"
+
+- task: post-task-2
+  run: echo "I am another post hook"
 
 - task: task-with-hooks
   description: Run a task with pre and post hooks
