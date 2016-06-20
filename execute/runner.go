@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/xsb/dog/types"
+	"github.com/dogtools/dog/types"
 )
 
 type runner struct {

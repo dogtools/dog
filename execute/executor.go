@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/xsb/dog/types"
+	"github.com/dogtools/dog/types"
 )
 
 var SystemExecutor *Executor

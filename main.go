@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/xsb/dog/execute"
-	"github.com/xsb/dog/parser"
-	"github.com/xsb/dog/types"
+	"github.com/dogtools/dog/execute"
+	"github.com/dogtools/dog/parser"
+	"github.com/dogtools/dog/types"
 )
 
 func printHelp() {
@@ -29,7 +29,7 @@ func main() {
 		if err != nil {
 			fmt.Println("Error: No valid Dogfile in current directory")
 			fmt.Println("Need help? --> dog help")
-			fmt.Println("More info ---> https://github.com/xsb/dog")
+			fmt.Println("More info ---> https://github.com/dogtools/dog")
 		} else {
 			printTasks(tm)
 		}

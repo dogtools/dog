@@ -6,8 +6,8 @@ import (
 	"os"
 	"regexp"
 
+	"github.com/dogtools/dog/types"
 	"github.com/ghodss/yaml"
-	"github.com/xsb/dog/types"
 )
 
 func ParseDogfile(d []byte) (tm types.TaskMap, err error) {

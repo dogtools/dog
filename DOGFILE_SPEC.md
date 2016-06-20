@@ -2,7 +2,7 @@
 
 This is a work in progress, almost none of this is implemented in `dog` yet. This document is a draft of the Dogfile Spec.
 
-[dog](https://github.com/xsb/dog) is a command line application that executes tasks. It's the first tool that uses Dogfiles and is developed at the same time as the Dogfile format itself.
+[dog](https://github.com/dogtools/dog) is a command line application that executes tasks. It's the first tool that uses Dogfiles and is developed at the same time as the Dogfile format itself.
 
 ## File Format
 
