@@ -76,7 +76,8 @@ func (ex *Executor) Exec(t *types.Task, eventsChan chan *types.Event) error {
 		return nil
 	}
 
-	eventsChan <- types.NewStartEvent(t.Name)
+	startEvent := types.NewStartEvent(t.Name)
+	eventsChan <- startEvent
 
 	statusCode := 0
 	if err := cmd.Wait(); err != nil {
@@ -90,7 +91,7 @@ func (ex *Executor) Exec(t *types.Task, eventsChan chan *types.Event) error {
 		}
 	}
 
-	eventsChan <- types.NewEndEvent(t.Name, statusCode)
+	eventsChan <- types.NewEndEvent(t.Name, statusCode, startEvent.Time)
 
 	return nil
 }

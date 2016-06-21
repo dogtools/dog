@@ -28,13 +28,14 @@ func NewOutputEvent(taskName string, body []byte) *Event {
 	}
 }
 
-func NewEndEvent(taskName string, statusCode int) *Event {
+func NewEndEvent(taskName string, statusCode int, startTime time.Time) *Event {
 	return &Event{
 		Name: "end",
 		Task: taskName,
 		Time: time.Now(),
 		Extras: map[string]interface{}{
 			"statusCode": statusCode,
+			"elapsed":    time.Since(startTime),
 		},
 	}
 }
