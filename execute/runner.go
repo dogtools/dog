@@ -12,6 +12,7 @@ import (
 type runner struct {
 	taskHierarchy map[string][]*types.Task
 	eventsChan    chan *types.Event
+	printFooter   bool
 }
 
 func generateChainFor(t *types.Task, tm types.TaskMap) ([]*types.Task, error) {
@@ -105,7 +106,7 @@ func formatDuration(d time.Duration) (s string) {
 }
 
 // NewRunner creates a new runner that contains a list of all execution paths.
-func NewRunner(tm types.TaskMap) (*runner, error) {
+func NewRunner(tm types.TaskMap, printFooter bool) (*runner, error) {
 	th, err := buildHierarchy(tm)
 	if err != nil {
 		return nil, err
@@ -118,6 +119,7 @@ func NewRunner(tm types.TaskMap) (*runner, error) {
 	return &runner{
 		taskHierarchy: th,
 		eventsChan:    make(chan *types.Event, 2048),
+		printFooter:   printFooter,
 	}, nil
 }
 
@@ -157,8 +159,6 @@ func (r *runner) waitFor(taskName string) {
 		select {
 		case event := <-r.eventsChan:
 			switch event.Name {
-			case "start":
-				fmt.Println(" - " + event.Task + " started")
 			case "output":
 				if body, ok := event.Extras["body"].([]byte); ok {
 					fmt.Println(string(body))
@@ -166,7 +166,9 @@ func (r *runner) waitFor(taskName string) {
 			case "end":
 				if statusCode, ok := event.Extras["statusCode"].(int); ok {
 					if elapsed, ok := event.Extras["elapsed"].(time.Duration); ok {
-						fmt.Printf(" - %s took %s and finished with status code %d\n", event.Task, formatDuration(elapsed), statusCode)
+						if r.printFooter {
+							fmt.Printf("-- %s took %s and finished with status code %d\n", event.Task, formatDuration(elapsed), statusCode)
+						}
 
 						if statusCode != 0 || event.Task == taskName {
 							os.Exit(statusCode)

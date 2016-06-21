@@ -60,7 +60,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		runner, err := execute.NewRunner(tm)
+		printTaskFooter := true // TODO: user can specify with a flag
+		runner, err := execute.NewRunner(tm, printTaskFooter)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
