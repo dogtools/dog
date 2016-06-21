@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/dogtools/dog/execute"
 	"github.com/dogtools/dog/parser"
@@ -15,8 +16,17 @@ func printHelp() {
 }
 
 func printTasks(tm types.TaskMap) {
-	for k, t := range tm {
-		fmt.Printf("%s\t%s\n", k, t.Description)
+	maxCharSize := 0
+
+	for taskName, _ := range tm {
+		if len(taskName) > maxCharSize {
+			maxCharSize = len(taskName)
+		}
+	}
+
+	for taskName, t := range tm {
+		spaces := strings.Repeat(" ", maxCharSize-len(taskName)+2)
+		fmt.Printf("%s%s%s\n", taskName, spaces, t.Description)
 	}
 }
 
