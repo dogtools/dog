@@ -50,6 +50,7 @@ If you want to help, take a look at:
 - Open [bugs](https://github.com/dogtools/dog/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 - Lacking features for [v0.1](https://github.com/dogtools/dog/milestones/v0.1)
 - Lacking features for [v0.2](https://github.com/dogtools/dog/milestones/v0.2)
+- Our [Code of Conduct](https://github.com/dogtools/dog/blob/master/CODE_OF_CONDUCT.md)
 
 In case you are not interested in improving Dog but on building your own tool on top of the Dogfile Spec, please help us discussing it:
 
