@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/dogtools/dog/types"
@@ -47,17 +48,23 @@ More info  --> https://github.com/dogtools/dog`)
 }
 
 func printTasks(tm types.TaskMap) {
-	maxCharSize := 0
 
+	maxCharSize := 0
 	for taskName, _ := range tm {
 		if len(taskName) > maxCharSize {
 			maxCharSize = len(taskName)
 		}
 	}
 
-	for taskName, t := range tm {
+	var tasks []string
+	for k := range tm {
+		tasks = append(tasks, k)
+	}
+	sort.Strings(tasks)
+
+	for _, taskName := range tasks {
 		spaces := strings.Repeat(" ", maxCharSize-len(taskName)+2)
-		fmt.Printf("%s%s%s\n", taskName, spaces, t.Description)
+		fmt.Printf("%s%s%s\n", taskName, spaces, tm[taskName].Description)
 	}
 }
 
