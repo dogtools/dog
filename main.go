@@ -35,7 +35,7 @@ func main() {
 	}
 
 	if a.taskName != "" {
-		runner, err := execute.NewRunner(tm, a.printFooter)
+		runner, err := execute.NewRunner(tm, a.info)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

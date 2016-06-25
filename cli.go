@@ -9,21 +9,21 @@ import (
 )
 
 type userArgs struct {
-	help        bool
-	version     bool
-	printFooter bool
-	taskName    string
-	taskArgs    []string
+	help     bool
+	version  bool
+	info     bool
+	taskName string
+	taskArgs []string
 }
 
 var knownFlags = [...]string{
-	"--help", "-h",
-	"--version", "-v",
-	"--footer", "--no-footer",
+	"-i", "--info",
+	"-h", "--help",
+	"-v", "--version",
 }
 
 func printVersion() {
-	fmt.Println("dog version: " + version)
+	fmt.Println("Dog version: " + version)
 }
 
 func printHelp() {
@@ -35,10 +35,9 @@ Dog is a command line application that executes tasks.
 
 Options:
 
-  --footer       Print information footer after task execution (default)
-  --no-footer    Don't print information footer after task execution
-  -h, --help     Print this help
-  -v, --version  Print version information and quit`)
+  -i, --info     Print execution info (duration, statuscode) after task execution
+  -h, --help     Print usage information and help
+  -v, --version  Print version information`)
 }
 
 func printNoValidDogfile() {
@@ -72,11 +71,11 @@ func parseArgs(args []string) (a userArgs, err error) {
 
 	// default values
 	a = userArgs{
-		help:        false,
-		version:     false,
-		printFooter: true,
-		taskName:    "",
-		taskArgs:    []string{},
+		help:     false,
+		version:  false,
+		info:     false,
+		taskName: "",
+		taskArgs: []string{},
 	}
 
 	// iterate over all provided arguments
@@ -87,7 +86,7 @@ func parseArgs(args []string) (a userArgs, err error) {
 				a.help = true
 				return a, nil
 			} else {
-				return a, fmt.Errorf("Error: --help doesn't accept additional parameters")
+				return a, fmt.Errorf("Error: %s doesn't accept additional parameters", arg)
 			}
 		}
 
@@ -96,23 +95,15 @@ func parseArgs(args []string) (a userArgs, err error) {
 				a.version = true
 				return a, nil
 			} else {
-				return a, fmt.Errorf("Error: --version doesn't accept additional parameters")
+				return a, fmt.Errorf("Error: %s doesn't accept additional parameters", arg)
 			}
 		}
 
-		if arg == "--footer" {
+		if arg == "--info" || arg == "-i" {
 			if a.taskName == "" {
-				a.printFooter = true
+				a.info = true
 			} else {
-				return a, fmt.Errorf("Error: --footer is not a valid task argument")
-			}
-		}
-
-		if arg == "--no-footer" {
-			if a.taskName == "" {
-				a.printFooter = false
-			} else {
-				return a, fmt.Errorf("Error: --no-footer is not a valid task argument")
+				return a, fmt.Errorf("Error: %s is not a valid task argument", arg)
 			}
 		}
 
