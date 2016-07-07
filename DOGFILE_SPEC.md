@@ -1,8 +1,8 @@
 # Dogfile Spec
 
-This is a work in progress, almost none of this is implemented in `dog` yet. This document is a draft of the Dogfile Spec.
+This is a work in progress, almost none of this is implemented in Dog yet. This document is a draft of the Dogfile Spec.
 
-[dog](https://github.com/dogtools/dog) is a command line application that executes tasks. It's the first tool that uses Dogfiles and is developed at the same time as the Dogfile format itself.
+[Dog](https://github.com/dogtools/dog) is a command line application that executes tasks. It's the first tool that uses Dogfiles and is developed at the same time as the Dogfile Spec itself.
 
 ## File Format
 
@@ -22,14 +22,14 @@ Multiple Dogfiles in the same directory are processed together as a single entit
 
 ## Task definition
 
-The task map accepts the following directives.
+The task map accepts the following directives. Please note that directives marked with an asterisk are not implemented yet and will possibly change.
 
 ### task
 
 Name of the task. A string made of lowercase characters (a-z), may contain hyphens (-).
 
 ```yml
-- task: deploy
+- task: mytask
 ```
 
 ### description
@@ -37,14 +37,14 @@ Name of the task. A string made of lowercase characters (a-z), may contain hyphe
 Description of the task.
 
 ```yml
-  description: Create Docker container
+  description: This task does some scull stuff
 ```
 ### run
 
 The code that will be executed.
 
 ```yml
-  run: npm install
+  run: echo 'hello'
 ```
 
 Multiline scripts are supported.
@@ -102,15 +102,15 @@ They also accept arrays.
     - upload
 ```
 
-### workdir
+### workdir*
 
-Sets the working directory for the task.
+Sets the working directory for the task. If a relative path is provided, it's considered relative to the ubication of the Dogfile.
 
 ```yml
-  workdir: app
+  workdir: ./app/
 ```
 
-### tag
+### tag*
 
 Tags are used to group similar tasks.
 
@@ -138,9 +138,31 @@ We can also tag our most important tasks to be highlighted at the top of the lis
   tags: top # Show this task at the top of the list
 ```
 
-### parameters
+### env*
 
-Additional parameters can be provided to the task that will be executed. Only works with shell-based executors.
+Environment variables that the user can pass to the task. Dog will fail if one of the defined environment variables is not defined.
+
+```yml
+  env: CITY
+```
+
+Arrays are the way to provide multiple environment variables.
+
+```yml
+  env:
+   - CITY
+   - ANIMAL
+```
+
+Default values can be defined, they can also be overrided at runtime.
+
+```yml
+  env: ANIMAL=Dog
+```
+
+### parameters*
+
+Additional parameters can be provided to the task that will be executed. This is a WIP and we still don't know how it will be defined, read it as an example of the idea.
 
 ```yml
   parameters:
@@ -159,9 +181,10 @@ Additional parameters can be provided to the task that will be executed. Only wo
   run: echo "I am a $animal that lives in $city, Planet $planet"
 ```
 
-### register
+### register*
 
-Registers store the output of executed commands so chained tasks (using pre or post hooks) can process the output later.
+Registers store the output of executed commands so chained tasks (using pre or post hooks) can process the output later. This is a WIP and we still don't know how it will be defined, read it as an example of the idea.
+
 
 ```yml
   task: remote-whoami
@@ -175,7 +198,7 @@ Registers store the output of executed commands so chained tasks (using pre or p
   run: echo "I am $remoteUser when I ssh into remote-host-example.com"
 ```
 
-### Non standard directives
+### Non standard directives*
 
 Optional directives that are not part of the Dogfile Format. Tools using Dogfiles and having special requirements can use their own directives that will be ignored by the tools that only follow the standard.
 
@@ -188,3 +211,5 @@ Any parameter starting by `x_` will simply be ignored.
   x_tls_required: true
   run: ./scripts/cache-clear.sh
 ```
+
+(*) Not implemented yet
