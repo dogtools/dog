@@ -49,7 +49,7 @@ More info  --> https://github.com/dogtools/dog`)
 func printTasks(tm types.TaskMap) {
 
 	maxCharSize := 0
-	for taskName, _ := range tm {
+	for taskName := range tm {
 		if len(taskName) > maxCharSize {
 			maxCharSize = len(taskName)
 		}
