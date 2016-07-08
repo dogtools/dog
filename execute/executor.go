@@ -67,6 +67,12 @@ func (ex *Executor) Exec(t *types.Task, eventsChan chan *types.Event) error {
 		return err
 	}
 
+	if t.Workdir != "" {
+		if err := os.Chdir(t.Workdir); err != nil {
+			return err
+		}
+	}
+
 	cmd := exec.Command(binary, f.Name())
 
 	if err := gatherCmdOutput(t.Name, cmd, eventsChan); err != nil {

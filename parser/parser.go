@@ -22,6 +22,7 @@ type task struct {
 	Pre         interface{} `json:"pre,omitempty"`
 	Post        interface{} `json:"post,omitempty"`
 	Env         interface{} `json:"env,omitempty"`
+	Workdir     string      `json:"workdir,omitempty"`
 }
 
 func parseStringSlice(str interface{}) ([]string, error) {
@@ -68,6 +69,7 @@ func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
 				Time:        t.Time,
 				Run:         t.Run,
 				Executor:    t.Executor,
+				Workdir:     t.Workdir,
 			}
 			if task.Pre, err = parseStringSlice(t.Pre); err != nil {
 				return

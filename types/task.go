@@ -10,6 +10,7 @@ type Task struct {
 	Pre         []string
 	Post        []string
 	Env         []string
+	Workdir     string
 }
 
 // TaskMap is a map in which the key is a task name and the value is a Task object
