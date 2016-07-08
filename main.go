@@ -7,11 +7,20 @@ import (
 
 	"github.com/dogtools/dog/execute"
 	"github.com/dogtools/dog/parser"
+	"github.com/joho/godotenv"
 )
 
 const version = "0.0"
 
 func main() {
+	// if .env file exists (in same dir as Dogfile), load values into env
+	if _, err := os.Stat(`./.env`); !os.IsNotExist(err) {
+		err = godotenv.Load()
+		if err != nil {
+			fmt.Println("Error loading .env file")
+			os.Exit(1)
+		}
+	}
 
 	a, err := parseArgs(os.Args[1:])
 	if err != nil {
