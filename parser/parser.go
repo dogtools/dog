@@ -46,6 +46,7 @@ func parseStringSlice(str interface{}) ([]string, error) {
 
 // ParseDogfile takes a byte slice and process it to return a TaskMap.
 func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
+	const validTaskName = "^[a-z-]+$"
 	var tasksToParse []*task
 
 	err = yaml.Unmarshal(d, &tasksToParse)
@@ -57,6 +58,8 @@ func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
 	for _, t := range tasksToParse {
 		if _, ok := tm[t.Name]; ok {
 			return tm, fmt.Errorf("Duplicated task name %s", t.Name)
+		} else if matches, _ := regexp.MatchString(validTaskName, t.Name); !matches {
+			return tm, fmt.Errorf("Invalid name for task %s", t.Name)
 		} else {
 			task := &types.Task{
 				Name:        t.Name,
