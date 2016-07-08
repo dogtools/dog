@@ -26,7 +26,7 @@ The task map accepts the following directives. Please note that directives marke
 
 ### task
 
-Name of the task. A string made of lowercase characters (a-z), may contain hyphens (-).
+Name of the task. A string made of lowercase characters (a-z), integers (0-9) and hyphens (-).
 
 ```yml
 - task: mytask
@@ -138,7 +138,7 @@ We can also tag our most important tasks to be highlighted at the top of the lis
   tags: top # Show this task at the top of the list
 ```
 
-### env*
+### env
 
 Default values for environment variables can be provided in the Dogfile. They can be modified at execution time.
 

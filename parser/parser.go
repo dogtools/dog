@@ -48,7 +48,7 @@ func parseStringSlice(str interface{}) ([]string, error) {
 
 // ParseDogfile takes a byte slice and process it to return a TaskMap.
 func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
-	const validTaskName = "^[a-z-]+$"
+	const validTaskName = "^[a-z0-9-]+$"
 	var tasksToParse []*task
 
 	err = yaml.Unmarshal(d, &tasksToParse)

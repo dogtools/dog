@@ -1,14 +1,44 @@
-- task: build
-  description: Build dog binary
-  pre: clean
-  run: |
-    [ -d bin ] || mkdir bin
-    go get -u ./...
-    go build -o bin/dog
-
 - task: clean
   description: Clean compiled binaries
-  run: rm -rf bin
+  run: rm -rf dist
+
+- task: build
+  description: Build dog binary for current platform
+  env:
+    - OUTPUT_PATH=dist/current
+    - REV=v0.1.0
+  run: |
+    go build \
+      -ldflags "-X main.Release=$REV -w" \
+      -o "${OUTPUT_PATH}/dog" \
+      .
+
+- task: install-build-deps
+  description: Installs required dependencies for building dog
+  run: go get -u github.com/mitchellh/gox
+
+- task: build-all
+  description: Build dog binary for all platforms
+  env:
+    - XC_ARCH=386 amd64
+    - XC_OS=linux darwin windows freebsd openbsd solaris
+    - REV=v0.1.0
+  pre: 
+    - install-build-deps
+    - clean
+  run: |
+    gox \
+      -os="${XC_OS}" \
+      -arch="${XC_ARCH}" \
+      -ldflags "-X main.Release=$REV -w" \
+      -output "dist/{{.OS}}_{{.Arch}}/dog" \
+      .
+
+- task: dist
+  description: Put all dist binaries in a compressed file
+  env: REV=v0.1.0
+  pre: build-all
+  run: tar zcvf dog-${REV}.tar.gz dist/
 
 - task: run-test-dogfiles
   description: Run all Tasks in testdata Dogfiles
