@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -10,42 +11,74 @@ import (
 	"github.com/ghodss/yaml"
 )
 
-func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
-	var tasks []*types.Task
+var ErrMalformedStringArray = errors.New("Malformed strings array")
 
-	err = yaml.Unmarshal(d, &tasks)
+type task struct {
+	Name        string      `json:"task"`
+	Description string      `json:"description,omitempty"`
+	Time        bool        `json:"time,omitempty"`
+	Run         string      `json:"run"`
+	Executor    string      `json:"exec,omitempty"`
+	Pre         interface{} `json:"pre,omitempty"`
+	Post        interface{} `json:"post,omitempty"`
+}
+
+func parseStringSlice(str interface{}) ([]string, error) {
+	switch h := str.(type) {
+	case string:
+		return []string{h}, nil
+	case []interface{}:
+		s := make([]string, len(h))
+		for i, hook := range h {
+			sHook, ok := hook.(string)
+			if !ok {
+				return nil, ErrMalformedStringArray
+			}
+			s[i] = sHook
+		}
+		return s, nil
+	case nil:
+		return []string{}, nil
+	default:
+		return nil, ErrMalformedStringArray
+	}
+}
+
+// ParseDogfile takes a byte slice and process it to return a TaskMap.
+func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
+	var tasksToParse []*task
+
+	err = yaml.Unmarshal(d, &tasksToParse)
 	if err != nil {
 		return
 	}
 
-	tm = make(types.TaskMap)
-	for _, t := range tasks {
+	tm = make(types.TaskMap, len(tasksToParse))
+	for _, t := range tasksToParse {
 		if _, ok := tm[t.Name]; ok {
 			return tm, fmt.Errorf("Duplicated task name %s", t.Name)
 		} else {
-			if pre, ok := t.Pre.(string); ok {
-				t.Pre = []string{pre}
-			} else if t.Pre == nil {
-				t.Pre = []string{}
-			} else if _, ok = t.Pre.([]string); !ok {
-				return tm, fmt.Errorf("Invalid pre for task %s", t.Name)
+			task := &types.Task{
+				Name:        t.Name,
+				Description: t.Description,
+				Time:        t.Time,
+				Run:         t.Run,
+				Executor:    t.Executor,
 			}
-
-			if post, ok := t.Post.(string); ok {
-				t.Post = []string{post}
-			} else if t.Post == nil {
-				t.Post = []string{}
-			} else if _, ok = t.Post.([]string); !ok {
-				return tm, fmt.Errorf("Invalid post for task %s", t.Name)
+			if task.Pre, err = parseStringSlice(t.Pre); err != nil {
+				return
 			}
-			tm[t.Name] = t
+			if task.Post, err = parseStringSlice(t.Post); err != nil {
+				return
+			}
+			tm[t.Name] = task
 		}
 	}
 
 	return
 }
 
-// LoadDogFile finds a Dogfile in disk, parses YAML and returns a map
+// LoadDogFile finds a Dogfile in disk, parses YAML and returns a map.
 func LoadDogFile() (tm types.TaskMap, err error) {
 	const validDogfileName = "^(Dogfile|🐕)"
 	var dogfiles []os.FileInfo

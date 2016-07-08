@@ -15,39 +15,59 @@ type runner struct {
 	printFooter   bool
 }
 
-func generateChainFor(t *types.Task, tm types.TaskMap) ([]*types.Task, error) {
-	chain := []*types.Task{}
-	if pres, ok := t.Pre.([]string); ok {
-		for _, preName := range pres {
-			pre, found := tm[preName]
-			if !found {
-				return nil, errors.New(
-					"Task " + preName + " does not exist",
-				)
+func isCyclic(chain []*types.Task) bool {
+	maxLen := len(chain) / 2
+	for i := 2; i < maxLen; i++ {
+		a := chain[:i]
+		b := chain[i : 2*i]
+		for x, c := range a {
+			if c != b[x] {
+				return false
 			}
-			preChain, err := generateChainFor(pre, tm)
-			if err != nil {
-				return nil, err
+		}
+		return true
+	}
+	return false
+}
+
+func generateChainFor(t *types.Task, tm types.TaskMap, chain []*types.Task) ([]*types.Task, error) {
+	var err error
+	if isCyclic(chain) {
+		return nil, errors.New("Task " + t.Name + " has a hook cycle")
+	}
+
+	for _, preName := range t.Pre {
+		pre, found := tm[preName]
+		if !found {
+			return nil, errors.New(
+				"Task " + preName + " does not exist",
+			)
+		}
+
+		for _, prePre := range pre.Pre {
+			if prePre == t.Name {
+				return nil, errors.New("Task " + preName + " has a hook cycle")
 			}
-			chain = append(chain, preChain...)
+		}
+
+		chain, err = generateChainFor(pre, tm, chain)
+		if err != nil {
+			return nil, err
 		}
 	}
 
 	chain = append(chain, t)
 
-	if posts, ok := t.Post.([]string); ok {
-		for _, postName := range posts {
-			post, found := tm[postName]
-			if !found {
-				return []*types.Task{}, errors.New(
-					"Task " + postName + " does not exist",
-				)
-			}
-			postChain, err := generateChainFor(post, tm)
-			if err != nil {
-				return nil, err
-			}
-			chain = append(chain, postChain...)
+	for _, postName := range t.Post {
+		post, found := tm[postName]
+		if !found {
+			return nil, errors.New(
+				"Task " + postName + " does not exist",
+			)
+		}
+		chain, err = generateChainFor(post, tm, chain)
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -58,7 +78,7 @@ func buildHierarchy(tm types.TaskMap) (map[string][]*types.Task, error) {
 	th := make(map[string][]*types.Task, len(tm))
 
 	for n, t := range tm {
-		chain, err := generateChainFor(t, tm)
+		chain, err := generateChainFor(t, tm, []*types.Task{})
 		if err != nil {
 			return nil, err
 		}
@@ -66,23 +86,6 @@ func buildHierarchy(tm types.TaskMap) (map[string][]*types.Task, error) {
 	}
 
 	return th, nil
-}
-
-func findCycles(th map[string][]*types.Task) error {
-	for name, tasks := range th {
-		for _, task := range tasks {
-			if task.Name == name {
-				continue
-			}
-
-			for _, subTask := range th[task.Name] {
-				if subTask.Name == name {
-					return errors.New("Hooks cycle in task " + name)
-				}
-			}
-		}
-	}
-	return nil
 }
 
 func formatDuration(d time.Duration) (s string) {
@@ -112,10 +115,6 @@ func NewRunner(tm types.TaskMap, printFooter bool) (*runner, error) {
 		return nil, err
 	}
 
-	if err = findCycles(th); err != nil {
-		return nil, err
-	}
-
 	return &runner{
 		taskHierarchy: th,
 		eventsChan:    make(chan *types.Event, 2048),
@@ -130,7 +129,6 @@ func (r *runner) Run(taskName string) {
 		fmt.Println("Task " + taskName + " does not exist")
 		os.Exit(1)
 	}
-
 	executors := map[string]*Executor{}
 	go func() {
 		for _, t := range tasks {

@@ -11,6 +11,7 @@ import (
 	"github.com/dogtools/dog/types"
 )
 
+// SystemExecutor is the default executor and is platform dependant.
 var SystemExecutor *Executor
 
 func init() {
