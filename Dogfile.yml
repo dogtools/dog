@@ -13,3 +13,6 @@
 - task: run-test-dogfiles
   description: Run all Tasks in testdata Dogfiles
   run: ./scripts/test-dogfiles.sh
+
+- task: hello
+  run: echo $CITY $TIME

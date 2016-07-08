@@ -21,6 +21,7 @@ type task struct {
 	Executor    string      `json:"exec,omitempty"`
 	Pre         interface{} `json:"pre,omitempty"`
 	Post        interface{} `json:"post,omitempty"`
+	Env         interface{} `json:"env,omitempty"`
 }
 
 func parseStringSlice(str interface{}) ([]string, error) {
@@ -72,6 +73,9 @@ func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
 				return
 			}
 			if task.Post, err = parseStringSlice(t.Post); err != nil {
+				return
+			}
+			if task.Env, err = parseStringSlice(t.Env); err != nil {
 				return
 			}
 			tm[t.Name] = task

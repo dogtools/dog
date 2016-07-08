@@ -140,24 +140,18 @@ We can also tag our most important tasks to be highlighted at the top of the lis
 
 ### env*
 
-Environment variables that the user can pass to the task. Dog will fail if one of the defined environment variables is not defined.
-
-```yml
-  env: CITY
-```
-
-Arrays are the way to provide multiple environment variables.
-
-```yml
-  env:
-   - CITY
-   - ANIMAL
-```
-
-Default values can be defined, they can also be overrided at runtime.
+Default values for environment variables can be provided in the Dogfile. They can be modified at execution time.
 
 ```yml
   env: ANIMAL=Dog
+```
+
+Arrays are also supported.
+
+```yml
+  env:
+   - CITY=Barcelona
+   - ANIMAL=Dog
 ```
 
 ### parameters*

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/dogtools/dog/types"
@@ -143,9 +144,28 @@ func (r *runner) Run(taskName string) {
 				}
 			}
 
+			modifiedEnvvars := map[string]bool{}
+
+			for _, e := range t.Env {
+				pair := strings.Split(e, "=")
+				if len(pair) != 2 {
+					fmt.Println("Error: env var invalid for task", t.Name)
+					os.Exit(1)
+				}
+
+				if os.Getenv(pair[0]) == "" {
+					os.Setenv(pair[0], pair[1])
+					modifiedEnvvars[pair[0]] = true
+				}
+			}
+
 			if err := e.Exec(t, r.eventsChan); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
+			}
+
+			for k := range modifiedEnvvars {
+				os.Setenv(k, "")
 			}
 		}
 	}()

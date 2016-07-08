@@ -13,7 +13,7 @@ type userArgs struct {
 	version  bool
 	info     bool
 	taskName string
-	taskArgs []string
+	taskArgs map[string][]string
 }
 
 var knownFlags = [...]string{
@@ -75,7 +75,7 @@ func parseArgs(args []string) (a userArgs, err error) {
 		version:  false,
 		info:     false,
 		taskName: "",
-		taskArgs: []string{},
+		taskArgs: map[string][]string{},
 	}
 
 	// iterate over all provided arguments
@@ -107,12 +107,17 @@ func parseArgs(args []string) (a userArgs, err error) {
 			}
 		}
 
-		if string(arg[0]) != "-" {
-			if a.taskName == "" {
-				a.taskName = arg
-			} else {
+		if a.taskName == "" && string(arg[0]) != "-" {
+			a.taskName = arg
+		} else if a.taskName != "" && string(arg[0]) == "-" {
+			if _, ok := a.taskArgs[arg]; !ok {
+				a.taskArgs[arg] = []string{}
+			}
+		} else if a.taskName != "" && string(arg[0]) != "-" {
+			if _, ok := a.taskArgs[args[i-1]]; !ok {
 				return a, fmt.Errorf("Error: only one task can be executed at a time")
 			}
+			a.taskArgs[args[i-1]] = append(a.taskArgs[args[i-1]], arg)
 		} else {
 			validArg := false
 			for _, f := range knownFlags {
