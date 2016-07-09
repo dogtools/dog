@@ -1,6 +1,7 @@
 # Dog
 
-[![Join the chat at https://gitter.im/dogtools/dog](https://badges.gitter.im/dogtools/dog.svg)](https://gitter.im/dogtools/dog?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/dogtools/dog.svg?branch=master)](https://travis-ci.org/dogtools/dog)
+[![Join the chat](https://badges.gitter.im/dogtools/dog.svg)](https://gitter.im/dogtools/dog)
 
 Dog is a command line application that executes automated tasks. It works in a similar way as GNU Make but it is a more generic task runner, not a build tool. Dog's default script syntax is `sh` but most interpreted languages like BASH, Python, Ruby or Perl can also be used.
 
