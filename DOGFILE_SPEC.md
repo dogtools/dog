@@ -102,7 +102,7 @@ They also accept arrays.
     - upload
 ```
 
-### workdir*
+### workdir
 
 Sets the working directory for the task. If a relative path is provided, it's considered relative to the ubication of the Dogfile.
 
@@ -177,19 +177,19 @@ Additional parameters can be provided to the task that will be executed. This is
 
 ### register*
 
-Registers store the output of executed commands so chained tasks (using pre or post hooks) can process the output later. This is a WIP and we still don't know how it will be defined, read it as an example of the idea.
+Registers store the STDOUT of executed tasks as text strings in environment variables. Other tasks (using pre or post hooks) can get their value later if their are part of the same task-chain execution.
 
 
 ```yml
-  task: remote-whoami
-  description: Check User in remote system
-  run: ssh remote-host-example.com whoami
-  register: remoteUser
+  task: get-dog-version
+  description: Get Dog version
+  run: dog --version | awk '{print $3}'
+  register: DOG_VERSION
 
-  task: print-remote-user
-  description: Print remote Username
-  pre: remote-whoami
-  run: echo "I am $remoteUser when I ssh into remote-host-example.com"
+  task: print-dog-version
+  description: Print Dog version
+  pre: get-dog-version
+  run: echo "I am running Dog $DOG_VERSION"
 ```
 
 ### Non standard directives*
