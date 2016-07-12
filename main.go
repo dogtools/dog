@@ -42,7 +42,7 @@ func main() {
 		switch a {
 		case "-e", "--env":
 			for _, e := range v {
-				pair := strings.Split(e, "=")
+				pair := strings.SplitN(e, "=", 2)
 				if len(pair) != 2 {
 					fmt.Println("Error in env parameter", e)
 					os.Exit(1)

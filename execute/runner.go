@@ -147,7 +147,7 @@ func (r *runner) Run(taskName string) {
 			modifiedEnvvars := map[string]bool{}
 
 			for _, e := range t.Env {
-				pair := strings.Split(e, "=")
+				pair := strings.SplitN(e, "=", 2)
 				if len(pair) != 2 {
 					fmt.Println("Error: env var invalid for task", t.Name)
 					os.Exit(1)
