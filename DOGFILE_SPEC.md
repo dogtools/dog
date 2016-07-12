@@ -126,18 +126,6 @@ Multiple tags are allowed.
     - dev
 ```
 
-Some special tags are provided. Hidden tasks are useful when we have tasks that are only executed as pre or post hooks but we don't want to show them in our task list.
-
-```yml
-  tags: hidden # Hide this task from the list
-```
-
-We can also tag our most important tasks to be highlighted at the top of the list in a separated group.
-
-```yml
-  tags: top # Show this task at the top of the list
-```
-
 ### env
 
 Default values for environment variables can be provided in the Dogfile. They can be modified at execution time.
