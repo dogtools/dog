@@ -1,0 +1,8 @@
+[
+  {
+    "task": "bash-conditional-echo-json",
+    "description": "Conditional and echo from BASH",
+    "exec": "bash",
+    "run": "if [[ 1 == 1 ]]; then\n  echo \"Yo Dawg ! Now parsing JSON too !!!\"\nfi\n"
+  }
+]

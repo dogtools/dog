@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"regexp"
 
 	"github.com/dogtools/dog/types"
@@ -47,7 +46,7 @@ func parseStringSlice(str interface{}) ([]string, error) {
 }
 
 // ParseDogfile takes a byte slice and process it to return a TaskMap.
-func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
+func ParseDogfile(d []byte, tm types.TaskMap) (err error) {
 	const validTaskName = "^[a-z0-9-]+$"
 	var tasksToParse []*task
 
@@ -56,12 +55,11 @@ func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
 		return
 	}
 
-	tm = make(types.TaskMap, len(tasksToParse))
 	for _, t := range tasksToParse {
 		if _, ok := tm[t.Name]; ok {
-			return tm, fmt.Errorf("Duplicated task name %s", t.Name)
+			return fmt.Errorf("Duplicated task name %s", t.Name)
 		} else if matches, _ := regexp.MatchString(validTaskName, t.Name); !matches {
-			return tm, fmt.Errorf("Invalid name for task %s", t.Name)
+			return fmt.Errorf("Invalid name for task %s", t.Name)
 		} else {
 			task := &types.Task{
 				Name:        t.Name,
@@ -90,14 +88,13 @@ func ParseDogfile(d []byte) (tm types.TaskMap, err error) {
 // LoadDogFile finds a Dogfile in disk, parses YAML and returns a map.
 func LoadDogFile() (tm types.TaskMap, err error) {
 	const validDogfileName = "^(Dogfile|🐕)"
-	var dogfiles []os.FileInfo
-	var d []byte
 
 	files, err := ioutil.ReadDir(".")
 	if err != nil {
 		return
 	}
 
+	tm = make(types.TaskMap)
 	for _, file := range files {
 		var match bool
 		match, err = regexp.MatchString(validDogfileName, file.Name())
@@ -106,18 +103,16 @@ func LoadDogFile() (tm types.TaskMap, err error) {
 		}
 
 		if match {
-			dogfiles = append(dogfiles, file)
+			var fileData []byte
+			fileData, err = ioutil.ReadFile(file.Name())
+			if err != nil {
+				return
+			}
+
+			if err = ParseDogfile(fileData, tm); err != nil {
+				return
+			}
 		}
 	}
-
-	for _, dogfile := range dogfiles {
-		var fileData []byte
-		fileData, err = ioutil.ReadFile(dogfile.Name())
-		if err != nil {
-			return
-		}
-		d = append(d, fileData...)
-	}
-
-	return ParseDogfile(d)
+	return
 }
