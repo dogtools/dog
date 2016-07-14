@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"regexp"
 
 	"github.com/dogtools/dog/types"
@@ -88,13 +89,14 @@ func ParseDogfile(d []byte, tm types.TaskMap) (err error) {
 // LoadDogFile finds a Dogfile in disk, parses YAML and returns a map.
 func LoadDogFile() (tm types.TaskMap, err error) {
 	const validDogfileName = "^(Dogfile|🐕)"
+	tm = make(types.TaskMap)
+	foundDogfile := false
 
 	files, err := ioutil.ReadDir(".")
 	if err != nil {
 		return
 	}
 
-	tm = make(types.TaskMap)
 	for _, file := range files {
 		var match bool
 		match, err = regexp.MatchString(validDogfileName, file.Name())
@@ -103,6 +105,7 @@ func LoadDogFile() (tm types.TaskMap, err error) {
 		}
 
 		if match {
+			foundDogfile = true
 			var fileData []byte
 			fileData, err = ioutil.ReadFile(file.Name())
 			if err != nil {
@@ -114,5 +117,17 @@ func LoadDogFile() (tm types.TaskMap, err error) {
 			}
 		}
 	}
+
+	if !foundDogfile {
+		err = os.Chdir("..")
+		if err != nil {
+			return
+		}
+		tm, err = LoadDogFile()
+		if err != nil {
+			return
+		}
+	}
+
 	return
 }
