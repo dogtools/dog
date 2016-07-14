@@ -49,15 +49,17 @@ More info  --> https://github.com/dogtools/dog`)
 func printTasks(tm types.TaskMap) {
 
 	maxCharSize := 0
-	for taskName := range tm {
-		if len(taskName) > maxCharSize {
+	for taskName, task := range tm {
+		if task.Description != "" && len(taskName) > maxCharSize {
 			maxCharSize = len(taskName)
 		}
 	}
 
 	var tasks []string
-	for k := range tm {
-		tasks = append(tasks, k)
+	for taskName, task := range tm {
+		if task.Description != "" {
+			tasks = append(tasks, taskName)
+		}
 	}
 	sort.Strings(tasks)
 
