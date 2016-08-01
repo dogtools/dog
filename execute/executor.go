@@ -79,6 +79,7 @@ func (ex *Executor) Exec(t *types.Task, eventsChan chan *types.Event) error {
 		return err
 	}
 
+	cmd.Stdin = os.Stdin
 	if err := cmd.Start(); err != nil {
 		return nil
 	}
