@@ -10,6 +10,7 @@ import (
 
 type userArgs struct {
 	help     bool
+	workdir  string
 	version  bool
 	info     bool
 	taskName string
@@ -18,6 +19,7 @@ type userArgs struct {
 
 var knownFlags = [...]string{
 	"-i", "--info",
+	"-w", "--workdir",
 	"-h", "--help",
 	"-v", "--version",
 }
@@ -36,6 +38,7 @@ Dog is a command line application that executes tasks.
 Options:
 
   -i, --info     Print execution info (duration, statuscode) after task execution
+  -w, --workdir  Specify the working directory
   -h, --help     Print usage information and help
   -v, --version  Print version information`)
 }
@@ -74,14 +77,22 @@ func parseArgs(args []string) (a userArgs, err error) {
 	// default values
 	a = userArgs{
 		help:     false,
+		workdir:  "",
 		version:  false,
 		info:     false,
 		taskName: "",
 		taskArgs: map[string][]string{},
 	}
 
+	skipArgument := false
+
 	// iterate over all provided arguments
 	for i, arg := range args {
+
+		if skipArgument {
+			skipArgument = false
+			continue
+		}
 
 		if arg == "--help" || arg == "-h" {
 			if i == 0 && len(args) == 1 && a.taskName == "" {
@@ -107,6 +118,12 @@ func parseArgs(args []string) (a userArgs, err error) {
 			} else {
 				return a, fmt.Errorf("Error: %s is not a valid task argument", arg)
 			}
+		}
+
+		if arg == "--workdir" || arg == "-w" {
+			next := i + 1
+			a.workdir = args[next]
+			skipArgument = true
 		}
 
 		if a.taskName == "" && string(arg[0]) != "-" {
