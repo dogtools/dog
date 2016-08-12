@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const version = "v0.1.0"
+const version = "v0.2.0"
 
 func main() {
 	// if .env file exists (in same dir as Dogfile), load values into env

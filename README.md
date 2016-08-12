@@ -54,7 +54,6 @@ Tools that use Dogfiles are called *dogtools*. Dog is the first dogtool but ther
 If you want to help, take a look at:
 
 - Open [bugs][6]
-- Lacking features for [v0.2.0][7]
 - Lacking features for [v0.3.0][8]
 - Our [Code of Conduct][9]
 
