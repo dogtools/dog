@@ -34,10 +34,6 @@ Execute a task, printing elapsed time and status code
 
     dog -i taskname
 
-Execute a task providing environment variables
-
-    dog taskname -e VAR_NAME_1=value -e VAR_NAME_2=value
-
 ## What is a Dogfile?
 
 Dogfile is a specification that uses YAML to describe the tasks related to a project. We think that the Spec will be finished (no further breaking changes) by the v1.0.0 version of Dog.

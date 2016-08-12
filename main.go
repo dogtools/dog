@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/dogtools/dog/execute"
 	"github.com/dogtools/dog/parser"
@@ -36,22 +35,6 @@ func main() {
 	if a.version {
 		printVersion()
 		os.Exit(0)
-	}
-
-	for a, v := range a.taskArgs {
-		switch a {
-		case "-e", "--env":
-			for _, e := range v {
-				pair := strings.SplitN(e, "=", 2)
-				if len(pair) != 2 {
-					fmt.Println("Error in env parameter", e)
-					os.Exit(1)
-				}
-				os.Setenv(pair[0], pair[1])
-			}
-		default:
-			fmt.Println("Argument not accepted", a, v)
-		}
 	}
 
 	tm, err := parser.LoadDogFile()
