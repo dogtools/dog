@@ -155,26 +155,36 @@ Arrays are also supported.
    - ANIMAL=Dog
 ```
 
-### parameters*
+### params*
 
-Additional parameters can be provided to the task that will be executed. This is a WIP and we still don't know how it will be defined, read it as an example of the idea.
+Additional parameters can be provided to the task that will be executed. All parameters are required at runtime.
 
 ```yml
-  parameters:
-    # Variable with default value
+- task: who-am-i
+  description: Print my location and who am I
+  params:
+    # Required parameter without default value
+    - name: city
+
+    # Parameter with default value
     - name: planet
       default: Earth
-    # Required variable without default value
-    - name: city
-      required: true
-    # Variable with an array of allowed values
+
+    # Parameter with an array of allowed choices
     - name: animal
-      values:
+      choices:
         - dog
         - cat
         - human
-  run: echo "I am a $animal that lives in $city, Planet $planet"
+
+    # Parameter with regular expression validation
+    - name: age
+      regex: ^\d+$
+
+  run: echo "Hello, I'm in the city of $1, planet $2. I am a $3 and I'm $4 years old"
 ```
+
+The *regex* option and the *choices* option are mutually exclusive.
 
 ### register*
 
