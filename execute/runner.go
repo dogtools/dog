@@ -173,28 +173,24 @@ func (r *runner) Run(taskName string) {
 }
 
 func (r *runner) waitFor(taskName string) {
+	var startTime time.Time
+
 	for {
 		select {
 		case event := <-r.eventsChan:
-			switch event.Name {
-			case "output":
-				if body, ok := event.Extras["body"].([]byte); ok {
-					fmt.Println(string(body))
+			switch event.Type {
+			case types.StartEvent:
+				startTime = event.Time
+			case types.OutputEvent:
+				fmt.Println(event.Body)
+			case types.EndEvent:
+				if r.printFooter {
+					fmt.Printf("-- %s took %s and finished with status code %d\n",
+						event.Task, formatDuration(time.Since(startTime)), event.ExitCode)
 				}
-			case "end":
-				if statusCode, ok := event.Extras["statusCode"].(int); ok {
-					if elapsed, ok := event.Extras["elapsed"].(time.Duration); ok {
-						if r.printFooter {
-							fmt.Printf("-- %s took %s and finished with status code %d\n", event.Task, formatDuration(elapsed), statusCode)
-						}
 
-						if statusCode != 0 || event.Task == taskName {
-							os.Exit(statusCode)
-						}
-					}
-
-				} else {
-					os.Exit(1)
+				if event.ExitCode != 0 || event.Task == taskName {
+					os.Exit(event.ExitCode)
 				}
 			}
 		}

@@ -2,16 +2,25 @@ package types
 
 import "time"
 
+type EventType int
+
+const (
+	StartEvent = EventType(iota + 1)
+	OutputEvent
+	EndEvent
+)
+
 type Event struct {
-	Name   string
-	Task   string
-	Time   time.Time
-	Extras map[string]interface{}
+	Type     EventType
+	Task     string
+	Time     time.Time
+	Body     []byte
+	ExitCode int
 }
 
 func NewStartEvent(taskName string) *Event {
 	return &Event{
-		Name: "start",
+		Type: StartEvent,
 		Task: taskName,
 		Time: time.Now(),
 	}
@@ -19,23 +28,18 @@ func NewStartEvent(taskName string) *Event {
 
 func NewOutputEvent(taskName string, body []byte) *Event {
 	return &Event{
-		Name: "output",
+		Type: OutputEvent,
 		Task: taskName,
 		Time: time.Now(),
-		Extras: map[string]interface{}{
-			"body": body,
-		},
+		Body: body,
 	}
 }
 
-func NewEndEvent(taskName string, statusCode int, startTime time.Time) *Event {
+func NewEndEvent(taskName string, exitCode int) *Event {
 	return &Event{
-		Name: "end",
-		Task: taskName,
-		Time: time.Now(),
-		Extras: map[string]interface{}{
-			"statusCode": statusCode,
-			"elapsed":    time.Since(startTime),
-		},
+		Type:     EndEvent,
+		Task:     taskName,
+		Time:     time.Now(),
+		ExitCode: exitCode,
 	}
 }
