@@ -182,7 +182,7 @@ func (r *runner) waitFor(taskName string) {
 			case types.StartEvent:
 				startTime = event.Time
 			case types.OutputEvent:
-				fmt.Println(event.Body)
+				fmt.Println(string(event.Body))
 			case types.EndEvent:
 				if r.printFooter {
 					fmt.Printf("-- %s took %s and finished with status code %d\n",
