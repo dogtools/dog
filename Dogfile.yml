@@ -6,7 +6,7 @@
   description: Build dog binary for current platform
   env:
     - OUTPUT_PATH=dist/current
-    - REV=v0.2.0
+    - REV=v0.3.0
   run: |
     go build \
       -ldflags "-X main.Release=$REV -w" \
@@ -22,7 +22,7 @@
   env:
     - XC_ARCH=386 amd64
     - XC_OS=linux darwin freebsd openbsd solaris
-    - REV=v0.2.0
+    - REV=v0.3.0
   pre: 
     - install-build-deps
     - clean
@@ -36,7 +36,7 @@
 
 - task: dist
   description: Put all dist binaries in a compressed file
-  env: REV=v0.2.0
+  env: REV=v0.3.0
   pre: build-all
   run: tar zcvf dog-${REV}.tar.gz dist/
 

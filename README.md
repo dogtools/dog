@@ -50,12 +50,12 @@ Tools that use Dogfiles are called *dogtools*. Dog is the first dogtool but ther
 If you want to help, take a look at:
 
 - Open [bugs][6]
-- Lacking features for [v0.3.0][8]
-- Our [Code of Conduct][9]
+- Lacking features for [v0.4.0][7]
+- Our [Code of Conduct][8]
 
 In case you are not interested in improving Dog but on building your own tool on top of the Dogfile Spec, please help us discussing it:
 
-- Dogfile Spec [open discussion][10]
+- Dogfile Spec [open discussion][9]
 
 [1]: https://github.com/dogtools/dog/blob/master/Dogfile.yml
 [2]: https://github.com/dogtools/dog/blob/master/DOGFILE_SPEC.md
@@ -63,7 +63,6 @@ In case you are not interested in improving Dog but on building your own tool on
 [4]: https://github.com/dogtools/dog/tree/master/types
 [5]: https://github.com/dogtools/dog/tree/master/execute
 [6]: https://github.com/dogtools/dog/issues?q=is%3Aissue+is%3Aopen+label%3Abug
-[7]: https://github.com/dogtools/dog/milestone/2
-[8]: https://github.com/dogtools/dog/milestone/3
-[9]: https://github.com/dogtools/dog/blob/master/CODE_OF_CONDUCT.md
-[10]: https://github.com/dogtools/dog/issues?q=is%3Aissue+is%3Aopen+label%3A%22dogfile+spec%22
+[7]: https://github.com/dogtools/dog/milestone/4
+[8]: https://github.com/dogtools/dog/blob/master/CODE_OF_CONDUCT.md
+[9]: https://github.com/dogtools/dog/issues?q=is%3Aissue+is%3Aopen+label%3A%22dogfile+spec%22
