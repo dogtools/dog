@@ -61,9 +61,7 @@ Multiline scripts are supported.
 
 ### exec
 
-When this directive is not defined, the default executor is `sh` on UNIX-like operating systems and `cmd` on Windows (not tested yet).
-
-Additional executors are supported if they are present in the system. The following example uses the Ruby executor to print 'Hello World'.
+When this directive is not defined, the default executor is `sh`. Additional executors are supported if they are present in the system. The following example uses the Ruby executor to print 'Hello World'.
 
 ```yml
   task: hello-ruby

@@ -135,7 +135,7 @@ func (r *runner) Run(taskName string) {
 		for _, t := range tasks {
 			var e *Executor
 			if t.Executor == "" {
-				e = SystemExecutor
+				e = NewExecutor("sh")
 			} else {
 				e, found = executors[t.Executor]
 				if !found {

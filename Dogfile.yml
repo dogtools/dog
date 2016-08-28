@@ -21,7 +21,7 @@
   description: Build dog binary for all platforms
   env:
     - XC_ARCH=386 amd64
-    - XC_OS=linux darwin windows freebsd openbsd solaris
+    - XC_OS=linux darwin freebsd openbsd solaris
     - REV=v0.2.0
   pre: 
     - install-build-deps

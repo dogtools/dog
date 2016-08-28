@@ -5,31 +5,14 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"runtime"
 	"syscall"
 
 	"github.com/dogtools/dog/types"
 )
 
-// SystemExecutor is the default executor and is platform dependant.
-var SystemExecutor *Executor
-
-func init() {
-	switch runtime.GOOS {
-	case "windows":
-		SystemExecutor = NewExecutor("cmd")
-	default:
-		SystemExecutor = NewExecutor("sh")
-	}
-}
-
-func writeTempFile(dir, prefix string, data string, perm os.FileMode) (*os.File, error) {
+func writeTempFile(dir, prefix string, data string) (*os.File, error) {
 	f, err := ioutil.TempFile(dir, prefix)
 	if err != nil {
-		return f, err
-	}
-
-	if err = f.Chmod(perm); err != nil {
 		return f, err
 	}
 
@@ -51,7 +34,7 @@ func NewExecutor(cmd string) *Executor {
 
 // Exec executes the created tmp script and writes the output to the writer.
 func (ex *Executor) Exec(t *types.Task, eventsChan chan *types.Event) error {
-	f, err := writeTempFile("", "dog", t.Run, 0644)
+	f, err := writeTempFile("", "dog", t.Run)
 	if err != nil {
 		return err
 	}
