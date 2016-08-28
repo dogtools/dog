@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
+	"path/filepath"
 	"regexp"
 
 	"github.com/dogtools/dog/types"
@@ -12,6 +14,7 @@ import (
 )
 
 var ErrMalformedStringArray = errors.New("Malformed strings array")
+var ErrNoDogfile = errors.New("No dogfile found")
 
 type task struct {
 	Name        string      `json:"task"`
@@ -86,45 +89,72 @@ func ParseDogfile(d []byte, tm types.TaskMap) (err error) {
 	return
 }
 
-// LoadDogFile finds a Dogfile in disk, parses YAML and returns a map.
-func LoadDogFile() (tm types.TaskMap, err error) {
+// FindDogFiles finds Dogfiles in disk, traversing directories up from the
+// given path until it finds a directory containing Dogfiles, and returns
+// their paths.
+func FindDogFiles(startPath string) (dogfilePaths []string, err error) {
 	const validDogfileName = "^(Dogfile|🐕)"
-	tm = make(types.TaskMap)
-	foundDogfile := false
-
-	files, err := ioutil.ReadDir(".")
+	currentPath, err := filepath.Abs(startPath)
 	if err != nil {
 		return
 	}
 
-	for _, file := range files {
-		var match bool
-		match, err = regexp.MatchString(validDogfileName, file.Name())
+	for {
+		var files []os.FileInfo
+		files, err = ioutil.ReadDir(currentPath)
 		if err != nil {
 			return
 		}
 
-		if match {
-			foundDogfile = true
-			var fileData []byte
-			fileData, err = ioutil.ReadFile(file.Name())
+		for _, file := range files {
+			var match bool
+			match, err = regexp.MatchString(validDogfileName, file.Name())
 			if err != nil {
 				return
 			}
 
-			if err = ParseDogfile(fileData, tm); err != nil {
-				return
+			if match {
+				dogfilePath := path.Join(currentPath, file.Name())
+				dogfilePaths = append(dogfilePaths, dogfilePath)
 			}
 		}
+
+		if len(dogfilePaths) > 0 {
+			return
+		}
+
+		nextPath := path.Dir(currentPath)
+		if nextPath == currentPath {
+			return
+		}
+		currentPath = nextPath
+	}
+}
+
+// LoadDogFile finds a Dogfile in disk, parses YAML and returns a map.
+func LoadDogFile(directory string) (tm types.TaskMap, err error) {
+	if directory == "" {
+		directory = "."
 	}
 
-	if !foundDogfile {
-		err = os.Chdir("..")
+	tm = make(types.TaskMap)
+	files, err := FindDogFiles(directory)
+	if err != nil {
+		return
+	}
+	if len(files) == 0 {
+		err = ErrNoDogfile
+		return
+	}
+
+	for _, file := range files {
+		var fileData []byte
+		fileData, err = ioutil.ReadFile(file)
 		if err != nil {
 			return
 		}
-		tm, err = LoadDogFile()
-		if err != nil {
+
+		if err = ParseDogfile(fileData, tm); err != nil {
 			return
 		}
 	}
