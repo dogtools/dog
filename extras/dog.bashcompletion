@@ -1,0 +1,50 @@
+
+_dog_completion() {
+    COMPREPLY=()
+    local curr="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local dogfile_path='./Dogfile.yml'
+    local flag_opts='-i --info -w --workdir -d --directory -h --help -v --version'
+    local dogfile_opts=''
+
+    # If we already defined another path for the Dogfile, we should use it.
+    if [[ ${COMP_WORDS[@]} =~ '--directory' ]] || [[ ${COMP_WORDS[@]} =~ '-d' ]]; then
+        local found=0
+        for elem in ${COMP_WORDS[@]}; do
+            if [[ "${found}" -eq 0 ]]; then
+                [[ "${elem}" == "--directory" ]] || [[ "${elem}" == "-d" ]] && found=1
+            else
+                dogfile_path="${elem}"
+                break
+            fi
+        done
+    fi
+
+    # If the previous argument needs a path.
+    case "${prev}" in
+        -w|--workdir)
+            COMPREPLY=( $( compgen -f "${curr}" ) )
+            return 0
+            ;;
+        -d|--directory)
+            COMPREPLY=( $( compgen -f "${curr}" ) )
+            return 0
+            ;;
+    esac
+
+    # Autocomplete flags.
+    if [[ "${curr}" == -* ]]; then
+        COMPREPLY=( $( compgen -W "${flag_opts}" -- "${curr}" ) )
+        return 0
+    fi
+
+    # Autocomplete Dogfile tasks.
+    if [[ -e "${dogfile_path}" ]]; then
+        opts=$( awk '/- task:/ {print $3}' "${dogfile_path}" )
+        COMPREPLY=( $( compgen -W "${opts}" -- "${curr}" ) )
+        return 0
+    fi
+}
+
+complete -F _dog_completion dog
+
