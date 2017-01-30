@@ -1,6 +1,14 @@
-# Dog
+<p align="center"><a href="https://github.com/dogtools/dog" target="_blank"><img width="300"src="https://raw.githubusercontent.com/dogtools/dog/master/img/dog_logo.png"></a></p>
 
-[![Build Status](https://travis-ci.org/dogtools/dog.svg?branch=master)](https://travis-ci.org/dogtools/dog)
+<p align="center">
+  <a href="https://github.com/dogtools/dog/releases/latest"><img src="https://img.shields.io/github/release/dogtools/dog.svg?style=flat-square"/></a>
+  <a href="https://github.com/dogtools/dog/issues"><img src="https://img.shields.io/github/issues/dogtools/dog.svg?style=flat-square"/></a>
+  <a href="https://travis-ci.org/dogtools/dog"><img src="https://img.shields.io/travis/dogtools/dog.svg?style=flat-square"/></a>
+  <a href="https://goreportcard.com/report/github.com/dogtools/dog"><img src="https://goreportcard.com/badge/github.com/dogtools/dog?style=flat-square&x=1"/></a>
+  <a href="https://github.com/dogtools/dog/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square"/></a>
+<p>
+
+# Dog
 
 Dog is a command line application that executes automated tasks. It works in a similar way as GNU Make but it is a more generic task runner, not a build tool. Dog's default script syntax is `sh` but most interpreted languages like BASH, Python or Ruby can also be used.
 
