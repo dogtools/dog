@@ -1,18 +1,15 @@
 - task: pre-task
-  description: Pre Task
-  run: echo "I am a prehook"
+  code: echo "I am a prehook"
 
 - task: post-task
-  description: Post Task
   post: post-task-2
-  run: echo "I am a post hook"
+  code: echo "I am a post hook"
 
 - task: post-task-2
-  description: Post Task 2
-  run: echo "I am another post hook"
+  code: echo "I am another post hook"
 
 - task: task-with-hooks
   description: Run a task with pre and post hooks
   pre: pre-task
   post: post-task
-  run: echo "I am the main task"
+  code: echo "I am the main task"

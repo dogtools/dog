@@ -1,6 +1,6 @@
 - task: long-run
   description: A task that takes 5 seconds
-  run: |
+  code: |
     for i in $(seq 1 5); do
       sleep 1
       echo "> $i/5"

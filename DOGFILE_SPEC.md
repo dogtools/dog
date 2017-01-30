@@ -11,11 +11,11 @@ Dogfiles are [YAML](http://yaml.org/) files that describe the execution of autom
 ```yml
 - task: hello
   description: Say Hello
-  run: echo hello
+  code: echo hello
 
 - task: bye
   description: Say Good Bye
-  run: echo bye
+  code: echo bye
 ```
 
 Multiple Dogfiles in the same directory are processed together as a single entity. Although the name `Dogfile.yml` is recommended, any file with a name that starts with `Dogfile` and follows this specification is a valid Dogfile.
@@ -40,18 +40,18 @@ Description of the task. Tasks that avoid this directive are not shown in the ta
   description: This task does some cool stuff
 ```
 
-### run
+### code
 
 The code that will be executed.
 
 ```yml
-  run: echo 'hello'
+  code: echo 'hello'
 ```
 
 Multiline scripts are supported.
 
 ```yml
-  run: |
+  code: |
     echo "This is the Dogfile in your current directory:"
 
     for dogfile in `ls -1 Dogfile*`; do
@@ -59,20 +59,20 @@ Multiline scripts are supported.
     done
 ```
 
-### exec
+### runner
 
-When this directive is not defined, the default executor is `sh`. Additional executors are supported if they are present in the system. The following example uses the Ruby executor to print 'Hello World'.
+When this directive is not defined, the default runner is `sh`. Additional runners are supported if they are present in the system. The following example uses the Ruby runner to print 'Hello World'.
 
 ```yml
   task: hello-ruby
   description: Hello World from Ruby
-  exec: ruby
-  run: |
+  runner: ruby
+  code: |
     hello = "Hello World"
     puts hello
 ```
 
-The following list of executors are known to work:
+The following list of runners are supported:
 
 - sh
 - bash
@@ -179,7 +179,7 @@ Additional parameters can be provided to the task that will be executed. All par
     - name: age
       regex: ^\d+$
 
-  run: echo "Hello, I'm in the city of $1, planet $2. I am a $3 and I'm $4 years old"
+  code: echo "Hello, I'm in the city of $1, planet $2. I am a $3 and I'm $4 years old"
 ```
 
 The *regex* option and the *choices* option are mutually exclusive.
@@ -190,13 +190,13 @@ Registers store the STDOUT of executed tasks as environment variables so other t
 
 ```yml
   task: get-dog-version
-  run: dog --version | awk '{print $3}'
+  code: dog --version | awk '{print $3}'
   register: DOG_VERSION
 
   task: print-dog-version
   description: Print Dog version
   pre: get-dog-version
-  run: echo "I am running Dog $DOG_VERSION"
+  code: echo "I am running Dog $DOG_VERSION"
 ```
 
 Dogfiles don't have global variables, use registers instead.
@@ -210,7 +210,7 @@ Tools using Dogfiles and having special requirements can define their own direct
   description: Clear the cache
   x_path: /task/clear-cache
   x_tls_required: true
-  run: ./scripts/cache-clear.sh
+  code: ./scripts/cache-clear.sh
 ```
 
 (*) Not implemented yet

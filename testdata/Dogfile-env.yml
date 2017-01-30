@@ -1,6 +1,0 @@
-- task: bash-env-file-echo
-  description: Conditional and echo from BASH
-  exec: bash
-  run: |
-      echo "Hello env values !"
-      echo $S3_BUCKET

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 cd testdata
 for task in $(dog | awk '{print $1}'); do

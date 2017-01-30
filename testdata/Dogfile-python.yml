@@ -1,4 +1,4 @@
 - task: python-print
   description: Python print says hello
-  exec: python
-  run: print("Hello Dog from Python!")
+  runner: python
+  code: print("Hello Dog from Python!")

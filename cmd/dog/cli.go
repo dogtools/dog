@@ -1,12 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-
-	"github.com/dogtools/dog/types"
-)
+import "fmt"
 
 type userArgs struct {
 	help      bool
@@ -36,10 +30,8 @@ func printHelp() {
        dog [--help] [--version]
 
 Dog is a command line application that executes tasks.
-
 Options:
-
-  -i, --info       Print execution info (duration, statuscode) after task execution
+  -i, --info       Print execution info (duration, exit status) after task execution
   -w, --workdir    Specify the working directory
   -d, --directory  Specify the dogfiles' directory
   -h, --help       Print usage information and help
@@ -50,29 +42,6 @@ func printNoValidDogfile() {
 	fmt.Println(`Error: No valid Dogfile in current directory
 Need help? --> dog --help
 More info  --> https://github.com/dogtools/dog`)
-}
-
-func printTasks(tm types.TaskMap) {
-
-	maxCharSize := 0
-	for taskName, task := range tm {
-		if task.Description != "" && len(taskName) > maxCharSize {
-			maxCharSize = len(taskName)
-		}
-	}
-
-	var tasks []string
-	for taskName, task := range tm {
-		if task.Description != "" {
-			tasks = append(tasks, taskName)
-		}
-	}
-	sort.Strings(tasks)
-
-	for _, taskName := range tasks {
-		spaces := strings.Repeat(" ", maxCharSize-len(taskName)+2)
-		fmt.Printf("%s%s%s\n", taskName, spaces, tm[taskName].Description)
-	}
 }
 
 func parseArgs(args []string) (a userArgs, err error) {
@@ -102,18 +71,16 @@ func parseArgs(args []string) (a userArgs, err error) {
 			if i == 0 && len(args) == 1 && a.taskName == "" {
 				a.help = true
 				return a, nil
-			} else {
-				return a, fmt.Errorf("Error: %s doesn't accept additional parameters", arg)
 			}
+			return a, fmt.Errorf("Error: %s doesn't accept additional parameters", arg)
 		}
 
 		if arg == "--version" || arg == "-v" {
 			if i == 0 && len(args) == 1 && a.taskName == "" {
 				a.version = true
 				return a, nil
-			} else {
-				return a, fmt.Errorf("Error: %s doesn't accept additional parameters", arg)
 			}
+			return a, fmt.Errorf("Error: %s doesn't accept additional parameters", arg)
 		}
 
 		if arg == "--info" || arg == "-i" {

@@ -1,7 +1,7 @@
 - task: bash-conditional-echo
   description: Conditional and echo from BASH
-  exec: bash
-  run: |
+  runner: bash
+  code: |
     if [[ 1 == 1 ]]; then
       echo "Hello Dog from BASH!"
     fi
