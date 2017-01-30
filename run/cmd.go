@@ -44,7 +44,7 @@ func (c *runCmd) writeTempFile(data string) error {
 	return nil
 }
 
-// newCmdRunner creates a cmd type runner of the choosen executor.
+// newCmdRunner creates a cmd type runner of the chosen executor.
 func newCmdRunner(runner string, code string, workdir string, env []string) (Runner, error) {
 	if code == "" {
 		return nil, errors.New("No code specified to run")
