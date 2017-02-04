@@ -64,7 +64,7 @@ Multiline scripts are supported.
 When this directive is not defined, the default runner is `sh`. Additional runners are supported if they are present in the system. The following example uses the Ruby runner to print 'Hello World'.
 
 ```yml
-  task: hello-ruby
+- task: hello-ruby
   description: Hello World from Ruby
   runner: ruby
   code: |
@@ -189,7 +189,7 @@ The *regex* option and the *choices* option are mutually exclusive.
 Registers store the STDOUT of executed tasks as environment variables so other tasks can get their value later if they are part of the same task-chain execution.
 
 ```yml
-  task: get-dog-version
+- task: get-dog-version
   code: dog --version | awk '{print $3}'
   register: DOG_VERSION
 
@@ -200,6 +200,17 @@ Registers store the STDOUT of executed tasks as environment variables so other t
 ```
 
 Dogfiles don't have global variables, use registers instead.
+
+### timeout*
+
+Timeout specifies the maximum amount of seconds a task is allowed to spend running. Once that time is reached execution stops and an error is returned.
+
+```yml
+- task: example
+  desctiption: This task can not run for more than 60 seconds
+  timeout: 60 # always use seconds
+  code: ./some-script.sh
+```
 
 ### Non standard directives*
 
