@@ -79,6 +79,7 @@ The following list of runners are supported:
 - python
 - ruby
 - perl
+- nodejs
 
 ### pre
 

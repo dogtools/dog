@@ -87,6 +87,8 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 			runner, err = run.NewRubyRunner(t.Code, t.Workdir, t.Env)
 		case "perl":
 			runner, err = run.NewPerlRunner(t.Code, t.Workdir, t.Env)
+		case "nodejs":
+			runner, err = run.NewNodejsRunner(t.Code, t.Workdir, t.Env)
 		default:
 			if t.Runner == "" {
 				return errors.New("Runner not specified")

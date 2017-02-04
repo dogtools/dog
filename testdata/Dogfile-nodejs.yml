@@ -1,0 +1,4 @@
+- task: nodejs-consolelog
+  description: Node.js console.log says hello
+  runner: nodejs
+  code: console.log("Hello from Node.js")

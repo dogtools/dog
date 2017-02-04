@@ -50,6 +50,11 @@ func NewPerlRunner(code string, workdir string, env []string) (Runner, error) {
 	return newCmdRunner("perl", code, workdir, env)
 }
 
+// NewNodejsRunner creates a Node.js runner.
+func NewNodejsRunner(code string, workdir string, env []string) (Runner, error) {
+	return newCmdRunner("node", code, workdir, env)
+}
+
 // GetOutputs is a helper method that returns both stdout and stderr outputs
 // from the runner.
 func GetOutputs(r Runner) (io.Reader, io.Reader, error) {
