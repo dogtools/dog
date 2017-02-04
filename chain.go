@@ -122,37 +122,16 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 			}
 			if ProvideExtraInfo {
 				fmt.Printf("-- %s (%s) failed with exit status %d\n",
-					t.Name, formatDuration(time.Since(startTime)), exitStatus)
+					t.Name, time.Since(startTime).String(), exitStatus)
 			}
 			return err
 		}
 
 		if ProvideExtraInfo {
 			fmt.Printf("-- %s (%s) finished with exit status %d\n",
-				t.Name, formatDuration(time.Since(startTime)), exitStatus)
+				t.Name, time.Since(startTime).String(), exitStatus)
 		}
 
 	}
 	return nil
-}
-
-// formatDuration returns a string representing a time duration in the format
-// {x}h{y}m{z}s, for example 3m25s.
-func formatDuration(d time.Duration) (timeMsg string) {
-
-	if d.Hours() > 1.0 {
-		timeMsg = fmt.Sprintf("%1.0fh", d.Hours())
-	}
-
-	if d.Minutes() > 1.0 {
-		timeMsg += fmt.Sprintf("%1.0fm", d.Minutes())
-	}
-
-	if d.Seconds() > 1.0 {
-		timeMsg += fmt.Sprintf("%1.0fs", d.Seconds())
-	} else {
-		timeMsg += fmt.Sprintf("%1.3fs", d.Seconds())
-	}
-
-	return timeMsg
 }
