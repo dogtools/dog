@@ -155,6 +155,29 @@ Arrays are also supported.
    - ANIMAL=Dog
 ```
 
+When multiple methods are used to define the same environment variable, the precedence is as follows (with the last listed methods winning prioritization):
+
+- Default value declared using the `env` directive
+- Environment variable coming from the system
+- Environment variable coming from a _register_ (read below)
+
+### register
+
+Registers store the output of tasks as environment variables so other tasks can get their value later if they are part of the same task-chain execution. Tasks storing their output in a register are silent and won't show any output when they run.
+
+```yml
+- task: get-dog-version
+  code: dog --version | awk '{print $3}'
+  register: DOG_VERSION
+
+  task: print-dog-version
+  description: Print Dog version
+  pre: get-dog-version
+  code: echo "I am running Dog $DOG_VERSION"
+```
+
+Dogfiles don't have global variables, use registers instead.
+
 ### params*
 
 Additional parameters can be provided to the task that will be executed. All parameters are required at runtime.
@@ -185,23 +208,6 @@ Additional parameters can be provided to the task that will be executed. All par
 ```
 
 The *regex* option and the *choices* option are mutually exclusive.
-
-### register*
-
-Registers store the STDOUT of executed tasks as environment variables so other tasks can get their value later if they are part of the same task-chain execution.
-
-```yml
-- task: get-dog-version
-  code: dog --version | awk '{print $3}'
-  register: DOG_VERSION
-
-  task: print-dog-version
-  description: Print Dog version
-  pre: get-dog-version
-  code: echo "I am running Dog $DOG_VERSION"
-```
-
-Dogfiles don't have global variables, use registers instead.
 
 ### timeout*
 

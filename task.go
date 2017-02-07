@@ -30,6 +30,14 @@ type Task struct {
 	// Sets the working directory for the task. Relative paths are
 	// considered relative to the location of the Dogfile.
 	Workdir string
+
+	// Register stores the output of the task so it can be accessed by
+	// other tasks in the task chain.
+	//
+	// When present, a new environment variable is injected in future
+	// task chain runners using the register name as key and the output
+	// as value.
+	Register string
 }
 
 // Validate runs a series of validations against a task.

@@ -1,10 +1,12 @@
 package dog
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"os/exec"
+	"strings"
 	"syscall"
 	"time"
 
@@ -70,27 +72,31 @@ func addToChain(taskChain *TaskChain, d Dogfile, tasks []string) error {
 // Run handles the execution of all tasks in the TaskChain.
 func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 	var startTime time.Time
+	var registers []string
 
 	for _, t := range taskChain.Tasks {
 		var err error
 		var runner run.Runner
+		register := new(bytes.Buffer)
+
 		exitStatus := 0
+		env := append(t.Env, registers...)
 
 		switch t.Runner {
 		case "sh":
-			runner, err = run.NewShRunner(t.Code, t.Workdir, t.Env)
+			runner, err = run.NewShRunner(t.Code, t.Workdir, env)
 		case "bash":
-			runner, err = run.NewBashRunner(t.Code, t.Workdir, t.Env)
+			runner, err = run.NewBashRunner(t.Code, t.Workdir, env)
 		case "python":
-			runner, err = run.NewPythonRunner(t.Code, t.Workdir, t.Env)
+			runner, err = run.NewPythonRunner(t.Code, t.Workdir, env)
 		case "ruby":
-			runner, err = run.NewRubyRunner(t.Code, t.Workdir, t.Env)
+			runner, err = run.NewRubyRunner(t.Code, t.Workdir, env)
 		case "perl":
-			runner, err = run.NewPerlRunner(t.Code, t.Workdir, t.Env)
+			runner, err = run.NewPerlRunner(t.Code, t.Workdir, env)
 		case "nodejs":
-			runner, err = run.NewNodejsRunner(t.Code, t.Workdir, t.Env)
+			runner, err = run.NewNodejsRunner(t.Code, t.Workdir, env)
 		case "go":
-			runner, err = run.NewGoRunner(t.Code, t.Workdir, t.Env)
+			runner, err = run.NewGoRunner(t.Code, t.Workdir, env)
 		default:
 			if t.Runner == "" {
 				return errors.New("Runner not specified")
@@ -106,7 +112,11 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 			return err
 		}
 
-		go io.Copy(stdout, runOut)
+		if t.Register == "" {
+			go io.Copy(stdout, runOut)
+		} else {
+			go io.Copy(register, runOut)
+		}
 		go io.Copy(stderr, runErr)
 
 		startTime = time.Now()
@@ -129,6 +139,11 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 					t.Name, time.Since(startTime).String(), exitStatus)
 			}
 			return err
+		}
+
+		if t.Register != "" {
+			r := fmt.Sprintf("%s=%s", t.Register, register.String())
+			registers = append(registers, strings.TrimSpace(r))
 		}
 
 		if ProvideExtraInfo {

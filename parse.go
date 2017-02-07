@@ -47,10 +47,12 @@ type taskYAML struct {
 	Runner string `json:"runner,omitempty"`
 	Exec   string `json:"exec,omitempty"` // backwards compatibility for 'runner'
 
-	Pre     interface{} `json:"pre,omitempty"`
-	Post    interface{} `json:"post,omitempty"`
-	Env     interface{} `json:"env,omitempty"`
-	Workdir string      `json:"workdir,omitempty"`
+	Pre  interface{} `json:"pre,omitempty"`
+	Post interface{} `json:"post,omitempty"`
+	Env  interface{} `json:"env,omitempty"`
+
+	Workdir  string `json:"workdir,omitempty"`
+	Register string `json:"register,omitempty"`
 }
 
 // Parse accepts a slice of bytes and parses it following the Dogfile Spec.
@@ -74,6 +76,7 @@ func (d *Dogfile) Parse(p []byte) error {
 				Code:        parsedTask.Code,
 				Runner:      parsedTask.Runner,
 				Workdir:     parsedTask.Workdir,
+				Register:    parsedTask.Register,
 			}
 
 			// convert pre-tasks, post-tasks and environment variables
