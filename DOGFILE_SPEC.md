@@ -26,7 +26,7 @@ The task map accepts the following directives. Please note that directives marke
 
 ### task
 
-Name of the task. A string that may include lowercase characters (a-z), integers (0-9) and hyphens (-).
+Name of the task. A string that may include lowercase characters (a-z), integers (0-9) and hyphens (-) but should not start or end with a hyphen.
 
 ```yml
 - task: mytask

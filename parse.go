@@ -255,7 +255,7 @@ func validDogfileName(name string) bool {
 // by the Dogfile Spec.
 func validTaskName(name string) bool {
 	var match bool
-	match, err := regexp.MatchString("^[a-z0-9-]+$", name)
+	match, err := regexp.MatchString("^[a-z0-9]+(-[a-z0-9]+)*$", name)
 	if err != nil {
 		return false
 	}
