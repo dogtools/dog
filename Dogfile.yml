@@ -37,7 +37,9 @@
 
 - task: release
   description: Put all dist binaries in a compressed file
-  pre: build-all
+  pre:
+    - build-all
+    - get_version
   code: |
     mv -v dist dog-${DOG_VERSION}
     tar zcvf dog-${DOG_VERSION}.tar.gz dog-${DOG_VERSION}
