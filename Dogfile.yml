@@ -25,8 +25,8 @@
     - install-build-deps
     - clean
   env:
-    - XC_ARCH=386 amd64
-    - XC_OS=linux darwin freebsd openbsd solaris
+    - XC_ARCH=386 amd64 arm
+    - XC_OS=linux darwin freebsd openbsd netbsd solaris
   code: |
     gox \
       -os="${XC_OS}" \
