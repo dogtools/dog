@@ -1,4 +1,4 @@
-- task: get_version
+- task: get-version
   code: grep "const version" cmd/dog/main.go | cut -d'"' -f2
   register: DOG_VERSION
 
@@ -39,7 +39,7 @@
   description: Put all dist binaries in a compressed file
   pre:
     - build-all
-    - get_version
+    - get-version
   code: |
     mv -v dist dog-${DOG_VERSION}
     tar zcvf dog-${DOG_VERSION}.tar.gz dog-${DOG_VERSION}
