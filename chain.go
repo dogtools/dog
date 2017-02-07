@@ -89,6 +89,8 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 			runner, err = run.NewPerlRunner(t.Code, t.Workdir, t.Env)
 		case "nodejs":
 			runner, err = run.NewNodejsRunner(t.Code, t.Workdir, t.Env)
+		case "go":
+			runner, err = run.NewGoRunner(t.Code, t.Workdir, t.Env)
 		default:
 			if t.Runner == "" {
 				return errors.New("Runner not specified")

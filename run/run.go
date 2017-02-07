@@ -27,32 +27,79 @@ type Runner interface {
 
 // NewShRunner creates a system standard shell script runner.
 func NewShRunner(code string, workdir string, env []string) (Runner, error) {
-	return newCmdRunner("sh", code, workdir, env)
+	return newCmdRunner(runCmdProperties{
+		runner:        "sh",
+		fileExtension: ".sh",
+		code:          code,
+		workdir:       workdir,
+		env:           env,
+	})
 }
 
 // NewBashRunner creates a Bash runner.
 func NewBashRunner(code string, workdir string, env []string) (Runner, error) {
-	return newCmdRunner("bash", code, workdir, env)
+	return newCmdRunner(runCmdProperties{
+		runner:        "bash",
+		fileExtension: ".sh",
+		code:          code,
+		workdir:       workdir,
+		env:           env,
+	})
 }
 
 // NewPythonRunner creates a Python runner.
 func NewPythonRunner(code string, workdir string, env []string) (Runner, error) {
-	return newCmdRunner("python", code, workdir, env)
+	return newCmdRunner(runCmdProperties{
+		runner:        "python",
+		fileExtension: ".py",
+		code:          code,
+		workdir:       workdir,
+		env:           env,
+	})
 }
 
 // NewRubyRunner creates a Ruby runner.
 func NewRubyRunner(code string, workdir string, env []string) (Runner, error) {
-	return newCmdRunner("ruby", code, workdir, env)
+	return newCmdRunner(runCmdProperties{
+		runner:        "ruby",
+		fileExtension: ".rb",
+		code:          code,
+		workdir:       workdir,
+		env:           env,
+	})
 }
 
 // NewPerlRunner creates a Perl runner.
 func NewPerlRunner(code string, workdir string, env []string) (Runner, error) {
-	return newCmdRunner("perl", code, workdir, env)
+	return newCmdRunner(runCmdProperties{
+		runner:        "perl",
+		fileExtension: ".pl",
+		code:          code,
+		workdir:       workdir,
+		env:           env,
+	})
 }
 
 // NewNodejsRunner creates a Node.js runner.
 func NewNodejsRunner(code string, workdir string, env []string) (Runner, error) {
-	return newCmdRunner("node", code, workdir, env)
+	return newCmdRunner(runCmdProperties{
+		runner:        "node",
+		fileExtension: ".js",
+		code:          code,
+		workdir:       workdir,
+		env:           env,
+	})
+}
+
+// NewGoRunner creates a Go runner that uses 'go run'.
+func NewGoRunner(code string, workdir string, env []string) (Runner, error) {
+	return newCmdRunner(runCmdProperties{
+		runner:        "go run",
+		fileExtension: ".go",
+		code:          code,
+		workdir:       workdir,
+		env:           env,
+	})
 }
 
 // GetOutputs is a helper method that returns both stdout and stderr outputs

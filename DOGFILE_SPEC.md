@@ -80,6 +80,7 @@ The following list of runners are supported:
 - ruby
 - perl
 - nodejs
+- go
 
 ### pre
 
