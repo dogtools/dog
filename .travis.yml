@@ -1,17 +1,19 @@
 language: go
 
 go:
-  - 1.6.2
+  - 1.7.x
   - tip
 
 install:
   - go get -t ./...
+  - go get github.com/client9/misspell/cmd/misspell
   - go get github.com/golang/lint/golint
   - go get honnef.co/go/staticcheck/cmd/staticcheck
   - go get github.com/kisielk/errcheck
 
 script:
   - diff <(echo -n) <(gofmt -s -d .)
+  - misspell -error .
   - go vet ./...
   - go test -v ./...
 
