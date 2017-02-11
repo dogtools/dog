@@ -52,3 +52,12 @@
   code: |
     mv -v dist dog-${DOG_VERSION}
     tar zcvf dog-${DOG_VERSION}.tar.gz dog-${DOG_VERSION}
+
+- task: release-docker
+  description: Build and push Docker container
+  pre: get-version
+  code: |
+    docker build -t xavisb/dog:${DOG_VERSION} .
+    docker tag xavisb/dog:${DOG_VERSION} xavisb/dog:latest
+    docker push xavisb/dog:${DOG_VERSION}
+    docker push xavisb/dog:latest
