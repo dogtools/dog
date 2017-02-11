@@ -2,10 +2,10 @@
 
 <p align="center">
   <a href="https://github.com/dogtools/dog/releases/latest"><img src="https://img.shields.io/github/release/dogtools/dog.svg?style=flat-square"/></a>
-  <a href="https://github.com/dogtools/dog/issues"><img src="https://img.shields.io/github/issues/dogtools/dog.svg?style=flat-square"/></a>
+  <a href="https://godoc.org/github.com/dogtools/dog"><img src="http://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square"/></a>
   <a href="https://travis-ci.org/dogtools/dog"><img src="https://img.shields.io/travis/dogtools/dog.svg?style=flat-square"/></a>
   <a href="https://goreportcard.com/report/github.com/dogtools/dog"><img src="https://goreportcard.com/badge/github.com/dogtools/dog?style=flat-square&x=1"/></a>
-  <a href="https://github.com/dogtools/dog/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square"/></a>
+  <a href="https://github.com/dogtools/dog/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square"/></a>
 <p>
 
 # Dog
