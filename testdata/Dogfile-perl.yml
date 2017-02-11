@@ -1,4 +1,0 @@
-- task: perl-print
-  description: Perl print says hello
-  runner: perl
-  code: print "Hello from Perl!\n";

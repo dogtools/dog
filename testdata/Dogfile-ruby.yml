@@ -1,4 +1,0 @@
-- task: ruby-puts
-  description: Ruby puts says hello
-  runner: ruby
-  code: puts "Hello Dog from Ruby!"

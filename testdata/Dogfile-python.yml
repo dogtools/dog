@@ -1,4 +1,0 @@
-- task: python-print
-  description: Python print says hello
-  runner: python
-  code: print("Hello Dog from Python!")

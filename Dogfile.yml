@@ -6,6 +6,14 @@
   description: Clean compiled binaries
   code: rm -rf dist dog-*
 
+- task: test
+  description: Run all tests
+  runner: bash
+  code: |
+    diff <(echo -n) <(gofmt -s -d .)
+    go vet ./...
+    go test -v ./...
+
 - task: build
   description: Build dog binary for current platform
   env: OUTPUT_PATH=dist/current
@@ -22,8 +30,9 @@
 - task: build-all
   description: Build dog binary for all platforms
   pre: 
-    - install-build-deps
     - clean
+    - test
+    - install-build-deps
   env:
     - XC_ARCH=386 amd64 arm
     - XC_OS=linux darwin freebsd openbsd netbsd solaris
@@ -43,7 +52,3 @@
   code: |
     mv -v dist dog-${DOG_VERSION}
     tar zcvf dog-${DOG_VERSION}.tar.gz dog-${DOG_VERSION}
-
-- task: run-test-dogfiles
-  description: Run all Tasks in testdata Dogfiles
-  code: ./scripts/test-dogfiles.sh
