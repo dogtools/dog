@@ -12,12 +12,13 @@ import (
 )
 
 // Dogfile object
-var d dog.Dogfile
+var dogfile dog.Dogfile
 
 func main() {
+	var err error
 
 	// Parse Dogfile from current path
-	err := d.ParseFromDisk(".")
+	dogfile, err = dog.ParseFromDisk(".")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -38,15 +39,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	taskName := r.URL.Path[1:]
 
 	// Generate task chain for the task named as the URL path
-	var tc dog.TaskChain
-	err := tc.Generate(d, taskName)
+	taskChain, err := dog.NewTaskChain(dogfile, taskName)
 	if err != nil {
 		fmt.Fprintf(w, "task chain generation failed: %s\n", err)
 		os.Exit(1)
 	}
 
 	// Run task chain, HTTP client receives info about how task finished
-	err = tc.Run(os.Stdout, os.Stderr)
+	err = taskChain.Run(os.Stdout, os.Stderr)
 	if err != nil {
 		fmt.Fprintf(w, "%s failed: %s\n", taskName, err)
 		os.Exit(2)

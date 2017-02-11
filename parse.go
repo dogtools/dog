@@ -56,19 +56,21 @@ type taskYAML struct {
 }
 
 // Parse accepts a slice of bytes and parses it following the Dogfile Spec.
-func (d *Dogfile) Parse(p []byte) error {
+func Parse(p []byte) (dogfile Dogfile, err error) {
 	var tasks []*taskYAML
 
-	err := yaml.Unmarshal(p, &tasks)
+	err = yaml.Unmarshal(p, &tasks)
 	if err != nil {
-		return err
+		return
 	}
 
 	for _, parsedTask := range tasks {
-		if _, ok := d.Tasks[parsedTask.Name]; ok {
-			return fmt.Errorf("Duplicated task name %s", parsedTask.Name)
+		if _, ok := dogfile.Tasks[parsedTask.Name]; ok {
+			err = fmt.Errorf("Duplicated task name %s", parsedTask.Name)
+			return
 		} else if !validTaskName(parsedTask.Name) {
-			return fmt.Errorf("Invalid name for task %s", parsedTask.Name)
+			err = fmt.Errorf("Invalid name for task %s", parsedTask.Name)
+			return
 		} else {
 			task := &Task{
 				Name:        parsedTask.Name,
@@ -82,13 +84,13 @@ func (d *Dogfile) Parse(p []byte) error {
 			// convert pre-tasks, post-tasks and environment variables
 			// into []string
 			if task.Pre, err = parseStringSlice(parsedTask.Pre); err != nil {
-				return err
+				return
 			}
 			if task.Post, err = parseStringSlice(parsedTask.Post); err != nil {
-				return err
+				return
 			}
 			if task.Env, err = parseStringSlice(parsedTask.Env); err != nil {
-				return err
+				return
 			}
 
 			// backwards compatibility support for 'run' and 'exec', now called
@@ -107,14 +109,14 @@ func (d *Dogfile) Parse(p []byte) error {
 				task.Runner = DefaultRunner
 			}
 
-			if d.Tasks == nil {
-				d.Tasks = make(map[string]*Task)
+			if dogfile.Tasks == nil {
+				dogfile.Tasks = make(map[string]*Task)
 			}
-			d.Tasks[task.Name] = task
+			dogfile.Tasks[task.Name] = task
 		}
 	}
 
-	return nil
+	return
 }
 
 // DeprecationWarnings writes deprecation warnings if they have been found on
@@ -156,44 +158,56 @@ func parseStringSlice(str interface{}) ([]string, error) {
 }
 
 // ParseFromDisk finds a Dogfile in disk and parses it.
-func (d *Dogfile) ParseFromDisk(dir string) error {
+func ParseFromDisk(dir string) (dogfile Dogfile, err error) {
 	if dir == "" {
 		dir = "."
 	}
-
-	dir, err := filepath.Abs(dir)
+	dir, err = filepath.Abs(dir)
 	if err != nil {
-		return err
+		return
 	}
-	d.Path = dir
+	dogfile.Path = dir
 
-	files, err := FindDogfiles(dir)
+	dogfile.Files, err = FindDogfiles(dir)
 	if err != nil {
-		return err
+		return
 	}
-	if len(files) == 0 {
-		return ErrNoDogfile
+	if len(dogfile.Files) == 0 {
+		err = ErrNoDogfile
+		return
 	}
-	d.Files = files
 
-	for _, file := range d.Files {
+	// iterate over every found file
+	for _, file := range dogfile.Files {
 		var fileData []byte
+		var d Dogfile
+
 		fileData, err = ioutil.ReadFile(file)
 		if err != nil {
-			return err
+			return
 		}
 
-		if err = d.Parse(fileData); err != nil {
-			return err
+		// parse file
+		d, err = Parse(fileData)
+		if err != nil {
+			return
+		}
+
+		// add parsed tasks to main dogfile
+		for _, t := range d.Tasks {
+			if dogfile.Tasks == nil {
+				dogfile.Tasks = make(map[string]*Task)
+			}
+			dogfile.Tasks[t.Name] = t
 		}
 	}
 
-	return nil
+	return
 }
 
 // Validate checks that all tasks in a Dogfile are valid.
-func (d *Dogfile) Validate() error {
-	for _, t := range d.Tasks {
+func (dogfile *Dogfile) Validate() error {
+	for _, t := range dogfile.Tasks {
 		if err := t.Validate(); err != nil {
 			return err
 		}

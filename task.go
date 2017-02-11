@@ -53,8 +53,7 @@ func (t *Task) Validate() error {
 	var d Dogfile
 	d.Tasks[t.Name] = t
 
-	var tc TaskChain
-	if err := tc.Generate(d, t.Name); err != nil {
+	if _, err := NewTaskChain(d, t.Name); err != nil {
 		return err
 	}
 	return nil

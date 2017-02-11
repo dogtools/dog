@@ -13,7 +13,7 @@ import (
 func main() {
 
 	// Define two tasks in the Dogfile format using YAML
-	dogfile := `
+	dogfileYAML := `
 - task: hello-dog
   description: Say Hello
   post: hello-world
@@ -25,23 +25,21 @@ func main() {
 `
 
 	// Parse Dogfile
-	var d dog.Dogfile
-	err := d.Parse([]byte(dogfile))
+	dogfile, err := dog.Parse([]byte(dogfileYAML))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// Generate task chain that starts with 'hello-dog' but include both tasks
-	var tc dog.TaskChain
-	err = tc.Generate(d, "hello-dog")
+	taskChain, err := dog.NewTaskChain(dogfile, "hello-dog")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// Run task chain
-	err = tc.Run(os.Stdout, os.Stderr)
+	err = taskChain.Run(os.Stdout, os.Stderr)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(2)

@@ -30,8 +30,8 @@ func main() {
 	}
 
 	// parse dogfile
-	var d dog.Dogfile
-	if err = d.ParseFromDisk(a.directory); err != nil {
+	dogfile, err := dog.ParseFromDisk(a.directory)
+	if err != nil {
 		printNoValidDogfile()
 		os.Exit(1)
 	}
@@ -42,12 +42,12 @@ func main() {
 			dog.ProvideExtraInfo = true
 		}
 
-		if d.Tasks[a.taskName] != nil {
+		if dogfile.Tasks[a.taskName] != nil {
 			if a.workdir != "" {
-				d.Tasks[a.taskName].Workdir = a.workdir
+				dogfile.Tasks[a.taskName].Workdir = a.workdir
 			}
-			if d.Tasks[a.taskName].Workdir == "" {
-				d.Tasks[a.taskName].Workdir = a.directory
+			if dogfile.Tasks[a.taskName].Workdir == "" {
+				dogfile.Tasks[a.taskName].Workdir = a.directory
 			}
 		} else {
 			fmt.Println("Unknown task name:", a.taskName)
@@ -55,20 +55,20 @@ func main() {
 		}
 
 		// generate task chain
-		var tc dog.TaskChain
-		if err = tc.Generate(d, a.taskName); err != nil {
+		taskChain, err := dog.NewTaskChain(dogfile, a.taskName)
+		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
 		// run task chain
-		err = tc.Run(os.Stdout, os.Stderr)
+		err = taskChain.Run(os.Stdout, os.Stderr)
 		if err != nil {
 			os.Exit(2)
 		}
 
 	} else {
-		printTasks(d)
+		printTasks(dogfile)
 		os.Exit(0)
 	}
 }
