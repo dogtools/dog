@@ -53,7 +53,7 @@ func TestDogfileParse(t *testing.T) {
   description: Bar task
   code: echo "bar"
 `)); err != nil {
-		t.Errorf("Failed parsing Dogfile from YAML")
+		t.Errorf("Failed parsing Dogfile from YAML: %s", err)
 	}
 }
 
@@ -86,7 +86,7 @@ func TestDogfileParsePreTasksArray(t *testing.T) {
 - task: dolor
   code: echo "dolor"
 `)); err != nil {
-		t.Errorf("Failed to parse pre tasks array")
+		t.Errorf("Failed to parse pre tasks array: %s", err)
 	}
 }
 
@@ -107,7 +107,7 @@ func TestDogfileValidatePost(t *testing.T) {
 	}
 	err := dogfile.Validate()
 	if err != nil {
-		t.Errorf("Failed validating a Dogfile with a post task")
+		t.Errorf("Failed validating a Dogfile with a post task: %s", err)
 	}
 }
 
