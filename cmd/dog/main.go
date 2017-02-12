@@ -91,7 +91,15 @@ func printTasks(d dog.Dogfile) {
 	sort.Strings(tasks)
 
 	for _, taskName := range tasks {
-		spaces := strings.Repeat(" ", maxCharSize-len(taskName)+2)
-		fmt.Printf("%s%s%s\n", taskName, spaces, d.Tasks[taskName].Description)
+		separator := strings.Repeat(" ", maxCharSize-len(taskName)+2)
+		fmt.Printf("%s%s%s\n", taskName, separator, d.Tasks[taskName].Description)
+		if len(d.Tasks[taskName].Pre) > 0 {
+			taskSpace := strings.Repeat(" ", len(taskName))
+			fmt.Printf("%s%s  <= %s\n", taskSpace, separator, strings.Join(d.Tasks[taskName].Pre[:], " "))
+		}
+		if len(d.Tasks[taskName].Post) > 0 {
+			taskSpace := strings.Repeat(" ", len(taskName))
+			fmt.Printf("%s%s  => %s\n", taskSpace, separator, strings.Join(d.Tasks[taskName].Post[:], " "))
+		}
 	}
 }
