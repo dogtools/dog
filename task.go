@@ -1,7 +1,5 @@
 package dog
 
-import "fmt"
-
 // Task represents a task described in the Dogfile format.
 type Task struct {
 	// Name of the task.
@@ -38,23 +36,4 @@ type Task struct {
 	// task chain runners using the register name as key and the output
 	// as value.
 	Register string
-}
-
-// Validate runs a series of validations against a task.
-//
-// It checks if it has a non standard name and also if
-// the resulting task chain have undesired cycles.
-func (t *Task) Validate() error {
-
-	if !validTaskName(t.Name) {
-		return fmt.Errorf("Invalid name for task %s", t.Name)
-	}
-
-	var d Dogfile
-	d.Tasks[t.Name] = t
-
-	if _, err := NewTaskChain(d, t.Name); err != nil {
-		return err
-	}
-	return nil
 }

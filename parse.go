@@ -116,6 +116,9 @@ func Parse(p []byte) (dogfile Dogfile, err error) {
 		}
 	}
 
+	// validate resulting dogfile
+	err = dogfile.Validate()
+
 	return
 }
 
@@ -202,15 +205,27 @@ func ParseFromDisk(dir string) (dogfile Dogfile, err error) {
 		}
 	}
 
+	// validate resulting dogfile
+	err = dogfile.Validate()
+
 	return
 }
 
 // Validate checks that all tasks in a Dogfile are valid.
+//
+// It checks if any task has a non standard name and also if the
+// resulting task chain of each of them have an undesired cycle.
 func (dogfile *Dogfile) Validate() error {
 	for _, t := range dogfile.Tasks {
-		if err := t.Validate(); err != nil {
+
+		if !validTaskName(t.Name) {
+			return fmt.Errorf("Invalid name for task %s", t.Name)
+		}
+
+		if _, err := NewTaskChain(*dogfile, t.Name); err != nil {
 			return err
 		}
+
 	}
 	return nil
 }
