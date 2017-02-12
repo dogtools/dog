@@ -17,26 +17,30 @@
 - task: build
   description: Build dog binary for current platform
   env: OUTPUT_PATH=dist/current
+  pre: clean
   code: |
     go build \
       -ldflags "-s -w" \
       -o "${OUTPUT_PATH}/dog" \
       cmd/dog/*.go
 
-- task: install-build-deps
-  description: Install required dependencies for building dog
-  code: go get -u github.com/mitchellh/gox
+- task: install
+  description: Install custom build to local system
+  env:
+    - BINARY_PATH=dist/current
+    - INSTALL_PATH=/usr/local/bin
+  code: sudo cp -v ${BINARY_PATH}/dog ${INSTALL_PATH}/dog
 
 - task: build-all
   description: Build dog binary for all platforms
   pre: 
     - clean
     - test
-    - install-build-deps
   env:
     - XC_ARCH=386 amd64 arm
     - XC_OS=linux darwin freebsd openbsd netbsd solaris
   code: |
+    go get -u github.com/mitchellh/gox
     gox \
       -os="${XC_OS}" \
       -arch="${XC_ARCH}" \
