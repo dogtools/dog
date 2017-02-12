@@ -1,4 +1,0 @@
-- task: must-fail
-  description: A task that fails
-  runner: ruby
-  code: putss "I fail"

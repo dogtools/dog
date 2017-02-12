@@ -42,7 +42,7 @@ func TestValidTaskName(t *testing.T) {
 	}
 }
 
-func TestDogfileParse(t *testing.T) {
+func TestDogfileParseYAML(t *testing.T) {
 	if _, err := Parse([]byte(`
 - task: foo
   description: Foo task
@@ -54,6 +54,24 @@ func TestDogfileParse(t *testing.T) {
   code: echo "bar"
 `)); err != nil {
 		t.Errorf("Failed parsing Dogfile from YAML: %s", err)
+	}
+}
+
+func TestDogfileParseJSON(t *testing.T) {
+	if _, err := Parse([]byte(`[
+  {
+    "task": "foo",
+    "description": "Foo task",
+    "post": "bar",
+    "code": "echo \"foo\""
+  },
+  {
+    "task": "bar",
+    "description": "Bar task",
+    "code": "echo \"bar\""
+  }
+]`)); err != nil {
+		t.Errorf("Failed parsing Dogfile from JSON: %s", err)
 	}
 }
 
