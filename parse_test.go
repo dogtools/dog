@@ -1,6 +1,9 @@
 package dog
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestValidDogfileName(t *testing.T) {
 	for i, test := range []struct {
@@ -43,7 +46,7 @@ func TestValidTaskName(t *testing.T) {
 }
 
 func TestDogfileParseYAML(t *testing.T) {
-	if _, err := Parse([]byte(`
+	got, err := Parse([]byte(`
 - task: foo
   description: Foo task
   post: bar
@@ -52,8 +55,35 @@ func TestDogfileParseYAML(t *testing.T) {
 - task: bar
   description: Bar task
   code: echo "bar"
-`)); err != nil {
-		t.Errorf("Failed parsing Dogfile from YAML: %s", err)
+`))
+	if err != nil {
+		t.Fatalf("Failed parsing Dogfile from YAML: %v", err)
+	}
+
+	want := Dogfile{
+		Tasks: map[string]*Task{
+			"foo": {
+				Name:        "foo",
+				Description: "Foo task",
+				Post:        []string{"bar"},
+				Code:        "echo \"foo\"",
+			},
+			"bar": {
+				Name:        "bar",
+				Description: "Bar task",
+				Code:        "echo \"bar\"",
+			},
+		},
+	}
+
+	if want.Tasks["foo"].Name != got.Tasks["foo"].Name ||
+		want.Tasks["foo"].Description != got.Tasks["foo"].Description ||
+		want.Tasks["foo"].Post[0] != got.Tasks["foo"].Post[0] ||
+		want.Tasks["foo"].Code != got.Tasks["foo"].Code ||
+		want.Tasks["bar"].Name != got.Tasks["bar"].Name ||
+		want.Tasks["bar"].Description != got.Tasks["bar"].Description ||
+		want.Tasks["bar"].Code != got.Tasks["bar"].Code {
+		t.Fatalf("Expected %v but was %v", want, got)
 	}
 }
 
@@ -90,7 +120,7 @@ func TestDogfileParseDuplicatedTask(t *testing.T) {
 }
 
 func TestDogfileParsePreTasksArray(t *testing.T) {
-	if _, err := Parse([]byte(`
+	dogfile, err := Parse([]byte(`
 - task: lorem
   description: Foo task
   pre:
@@ -103,8 +133,16 @@ func TestDogfileParsePreTasksArray(t *testing.T) {
 
 - task: dolor
   code: echo "dolor"
-`)); err != nil {
-		t.Errorf("Failed to parse pre tasks array: %s", err)
+`))
+	if err != nil {
+		t.Fatalf("Failed to parse pre tasks array: %v", err)
+	}
+
+	got := dogfile.Tasks["lorem"].Pre
+	want := []string{"ipsum", "dolor"}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("Expected %v but was %v", want, got)
 	}
 }
 
@@ -125,7 +163,7 @@ func TestDogfileValidatePost(t *testing.T) {
 	}
 	err := dogfile.Validate()
 	if err != nil {
-		t.Errorf("Failed validating a Dogfile with a post task: %s", err)
+		t.Errorf("Failed validating a Dogfile with a post task: %v", err)
 	}
 }
 

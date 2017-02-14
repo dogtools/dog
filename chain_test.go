@@ -43,16 +43,16 @@ func TestRunTaskChain(t *testing.T) {
 
 	taskChain, err := NewTaskChain(dogfile, "foo")
 	if err != nil {
-		t.Errorf("Failed generating a task chain: %s", err)
+		t.Fatalf("Failed generating a task chain: %v", err)
 	}
 
 	runOut, runErr := new(bytes.Buffer), new(bytes.Buffer)
 	if err = taskChain.Run(runOut, runErr); err != nil {
-		t.Errorf("Failed running a task chain: %s", err)
+		t.Fatalf("Failed running a task chain: %v", err)
 	}
 
 	if got, want := strings.TrimSpace(runOut.String()), "foo"; got != want {
-		t.Errorf("Expected %s but was %s", want, got)
+		t.Fatalf("Expected %v but was %v", want, got)
 	}
 }
 
@@ -70,11 +70,11 @@ func TestRunTaskChainMustFail(t *testing.T) {
 
 	taskChain, err := NewTaskChain(dogfile, "must-fail")
 	if err != nil {
-		t.Errorf("Failed generating a task chain: %s", err)
+		t.Fatalf("Failed generating a task chain: %v", err)
 	}
 
 	if err = taskChain.Run(new(bytes.Buffer), new(bytes.Buffer)); err == nil {
-		t.Errorf("Failed to detect a non-zero status code")
+		t.Fatalf("Failed to detect a non-zero status code")
 	}
 }
 
@@ -112,21 +112,16 @@ func TestRunTaskChainMultipleHooks(t *testing.T) {
 
 	taskChain, err := NewTaskChain(dogfile, "main")
 	if err != nil {
-		t.Errorf("Failed generating a task chain: %s", err)
+		t.Fatalf("Failed generating a task chain: %v", err)
 	}
 
-	runOut, runErr := new(bytes.Buffer), new(bytes.Buffer)
-	if err = taskChain.Run(runOut, runErr); err != nil {
-		t.Errorf("Failed running a task chain: %s", err)
+	want := []string{"pre-task", "main", "post-task", "final-task"}
+	got := []string{}
+	for _, t := range taskChain.Tasks {
+		got = append(got, t.Name)
 	}
-
-	var want = `pre-task
-main-task
-post-task
-final-task
-`
-	if got, want := runOut.String(), want; got != want {
-		t.Errorf("Expected %s but was %s", want, got)
+	if strings.Join(got, " ") != strings.Join(want, " ") {
+		t.Fatalf("Expected %v but was %v", want, got)
 	}
 }
 
@@ -143,11 +138,11 @@ func TestRunTaskChainNoRunner(t *testing.T) {
 
 	taskChain, err := NewTaskChain(dogfile, "foo")
 	if err != nil {
-		t.Errorf("Failed generating a task chain: %s", err)
+		t.Fatalf("Failed generating a task chain: %v", err)
 	}
 
 	if err = taskChain.Run(new(bytes.Buffer), new(bytes.Buffer)); err == nil {
-		t.Errorf("Failed to detect a task without runner")
+		t.Fatalf("Failed to detect a task without runner")
 	}
 }
 
@@ -165,10 +160,10 @@ func TestRunTaskChainUnsupportedRunner(t *testing.T) {
 
 	taskChain, err := NewTaskChain(dogfile, "foo")
 	if err != nil {
-		t.Errorf("Failed generating a task chain: %s", err)
+		t.Fatalf("Failed generating a task chain: %v", err)
 	}
 
 	if err = taskChain.Run(new(bytes.Buffer), new(bytes.Buffer)); err == nil {
-		t.Errorf("Failed to detect an unsupported runner: %s", err)
+		t.Fatalf("Failed to detect an unsupported runner: %v", err)
 	}
 }
