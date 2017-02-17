@@ -29,6 +29,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	if a.debug {
+		fmt.Fprintf(os.Stderr, "[dog-debug] version: %s\n", version)
+		fmt.Fprintf(os.Stderr, "[dog-debug] info: %v\n", a.info)
+	}
+
 	// parse dogfile
 	dogfile, err := dog.ParseFromDisk(a.directory)
 	if err != nil {
@@ -36,6 +41,10 @@ func main() {
 		os.Exit(1)
 	}
 	dog.DeprecationWarnings(os.Stderr)
+	if a.debug {
+		fmt.Fprintf(os.Stderr, "[dog-debug] path: %s\n", dogfile.Path)
+		fmt.Fprintf(os.Stderr, "[dog-debug] dogfiles: %v\n", dogfile.Files)
+	}
 
 	if a.taskName != "" {
 		if a.info {
@@ -59,6 +68,13 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
+		}
+		if a.debug {
+			var chain string
+			for _, t := range taskChain.Tasks {
+				chain += fmt.Sprintf("%s ", t.Name)
+			}
+			fmt.Fprintf(os.Stderr, "[dog-debug] chain: %s\n", chain)
 		}
 
 		// run task chain

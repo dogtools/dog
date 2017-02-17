@@ -8,6 +8,7 @@ type userArgs struct {
 	directory string
 	version   bool
 	info      bool
+	debug     bool
 	taskName  string
 	taskArgs  map[string][]string
 }
@@ -18,6 +19,7 @@ var knownFlags = [...]string{
 	"-h", "--help",
 	"-v", "--version",
 	"-d", "--directory",
+	"--debug",
 }
 
 func printVersion() {
@@ -35,7 +37,8 @@ Options:
   -w, --workdir    Specify the working directory
   -d, --directory  Specify the dogfiles' directory
   -h, --help       Print usage information and help
-  -v, --version    Print version information`)
+  -v, --version    Print version information
+      --debug      Print debug information before running tasks`)
 }
 
 func printNoValidDogfile() {
@@ -53,6 +56,7 @@ func parseArgs(args []string) (a userArgs, err error) {
 		directory: "",
 		version:   false,
 		info:      false,
+		debug:     false,
 		taskName:  "",
 		taskArgs:  map[string][]string{},
 	}
@@ -86,6 +90,14 @@ func parseArgs(args []string) (a userArgs, err error) {
 		if arg == "--info" || arg == "-i" {
 			if a.taskName == "" {
 				a.info = true
+			} else {
+				return a, fmt.Errorf("Error: %s is not a valid task argument", arg)
+			}
+		}
+
+		if arg == "--debug" {
+			if a.taskName == "" {
+				a.debug = true
 			} else {
 				return a, fmt.Errorf("Error: %s is not a valid task argument", arg)
 			}
