@@ -18,7 +18,7 @@ var ErrCycleInTaskChain = errors.New("TaskChain includes a cycle of tasks")
 
 // TaskChain contains one or more tasks to be executed in order.
 type TaskChain struct {
-	Tasks []*Task
+	Tasks []Task
 }
 
 // NewTaskChain creates the task chain for a specific dogfile and task.
@@ -54,7 +54,7 @@ func (taskChain *TaskChain) generate(d Dogfile, task string) error {
 	}
 
 	// Add current task to chain
-	taskChain.Tasks = append(taskChain.Tasks, t)
+	taskChain.Tasks = append(taskChain.Tasks, *t)
 
 	// Iterate over post-tasks
 	if err := addToChain(taskChain, d, t.Post); err != nil {
