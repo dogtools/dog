@@ -26,8 +26,8 @@ type TaskChain struct {
 }
 
 // NewTaskChain creates the task chain for a specific dogfile and task.
-func NewTaskChain(d Dogfile, task string) (taskChain TaskChain, err error) {
-	err = taskChain.generate(d, task)
+func NewTaskChain(dtasks Dogtasks, task string) (taskChain TaskChain, err error) {
+	err = taskChain.generate(dtasks, task)
 	if err != nil {
 		return
 	}
@@ -36,9 +36,9 @@ func NewTaskChain(d Dogfile, task string) (taskChain TaskChain, err error) {
 
 // Generate recursively iterates over all tasks, including pre and post tasks for
 // each of them, and adds all of them into a task chain.
-func (taskChain *TaskChain) generate(d Dogfile, task string) error {
+func (taskChain *TaskChain) generate(dtasks Dogtasks, task string) error {
 
-	t, found := d.Tasks[task]
+	t, found := dtasks.Tasks[task]
 	if !found {
 		return fmt.Errorf("Task %q does not exist", task)
 	}
@@ -53,7 +53,7 @@ func (taskChain *TaskChain) generate(d Dogfile, task string) error {
 	}
 
 	// Iterate over pre-tasks
-	if err := addToChain(taskChain, d, t.Pre); err != nil {
+	if err := addToChain(taskChain, dtasks, t.Pre); err != nil {
 		return err
 	}
 
@@ -61,22 +61,22 @@ func (taskChain *TaskChain) generate(d Dogfile, task string) error {
 	taskChain.Tasks = append(taskChain.Tasks, *t)
 
 	// Iterate over post-tasks
-	if err := addToChain(taskChain, d, t.Post); err != nil {
+	if err := addToChain(taskChain, dtasks, t.Post); err != nil {
 		return err
 	}
 	return nil
 }
 
 // addToChain adds found tasks into the task chain.
-func addToChain(taskChain *TaskChain, d Dogfile, tasks []string) error {
+func addToChain(taskChain *TaskChain, dtasks Dogtasks, tasks []string) error {
 	for _, name := range tasks {
 
-		t, found := d.Tasks[name]
+		t, found := dtasks.Tasks[name]
 		if !found {
 			return fmt.Errorf("Task %q does not exist", name)
 		}
 
-		if err := taskChain.generate(d, t.Name); err != nil {
+		if err := taskChain.generate(dtasks, t.Name); err != nil {
 			return err
 		}
 	}

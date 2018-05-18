@@ -59,7 +59,7 @@ func TestDogfileParseYAML(t *testing.T) {
 		t.Fatalf("Failed parsing Dogfile from YAML: %v", err)
 	}
 
-	want := Dogfile{
+	want := Dogtasks{
 		Tasks: map[string]*Task{
 			"foo": {
 				Name:        "foo",
@@ -119,7 +119,7 @@ func TestDogfileParseDuplicatedTask(t *testing.T) {
 }
 
 func TestDogfileParsePreTasksArray(t *testing.T) {
-	dogfile, err := Parse([]byte(`
+	dtasks, err := Parse([]byte(`
 - task: lorem
   description: Foo task
   pre:
@@ -137,7 +137,7 @@ func TestDogfileParsePreTasksArray(t *testing.T) {
 		t.Fatalf("Failed to parse pre tasks array: %v", err)
 	}
 
-	got := dogfile.Tasks["lorem"].Pre
+	got := dtasks.Tasks["lorem"].Pre
 	want := []string{"ipsum", "dolor"}
 
 	if !reflect.DeepEqual(got, want) {
@@ -146,7 +146,7 @@ func TestDogfileParsePreTasksArray(t *testing.T) {
 }
 
 func TestDogfileValidatePost(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"foo": {
 				Name:        "foo",
@@ -160,14 +160,14 @@ func TestDogfileValidatePost(t *testing.T) {
 			},
 		},
 	}
-	err := dogfile.Validate()
+	err := dtasks.Validate()
 	if err != nil {
 		t.Errorf("Failed validating a Dogfile with a post task: %v", err)
 	}
 }
 
 func TestDogfileValidatePostError(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"foo": {
 				Name:        "foo",
@@ -177,7 +177,7 @@ func TestDogfileValidatePostError(t *testing.T) {
 			},
 		},
 	}
-	err := dogfile.Validate()
+	err := dtasks.Validate()
 	if err == nil {
 		t.Errorf("Failed, should have errored validating a Dogfile with an unexistent post task")
 	}

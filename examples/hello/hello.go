@@ -25,14 +25,14 @@ func main() {
 `
 
 	// Parse Dogfile
-	dogfile, err := dog.Parse([]byte(dogfileYAML))
+	dtasks, err := dog.Parse([]byte(dogfileYAML))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// Generate task chain that starts with 'hello-dog' but include both tasks
-	taskChain, err := dog.NewTaskChain(dogfile, "hello-dog")
+	taskChain, err := dog.NewTaskChain(dtasks, "hello-dog")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
