@@ -7,7 +7,7 @@ import (
 )
 
 func TestCycleDetection(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"foo": {
 				Name:        "foo",
@@ -24,13 +24,13 @@ func TestCycleDetection(t *testing.T) {
 		},
 	}
 
-	if _, err := NewTaskChain(dogfile, "foo"); err == nil {
+	if _, err := NewTaskChain(dtasks, "foo"); err == nil {
 		t.Errorf("Failed detecting a cycle in a task chain")
 	}
 }
 
 func TestRunTaskChain(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"foo": {
 				Name:        "foo",
@@ -41,7 +41,7 @@ func TestRunTaskChain(t *testing.T) {
 		},
 	}
 
-	taskChain, err := NewTaskChain(dogfile, "foo")
+	taskChain, err := NewTaskChain(dtasks, "foo")
 	if err != nil {
 		t.Fatalf("Failed generating a task chain: %v", err)
 	}
@@ -57,7 +57,7 @@ func TestRunTaskChain(t *testing.T) {
 }
 
 func TestRunTaskChainMustFail(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"must-fail": {
 				Name:        "must-fail",
@@ -68,7 +68,7 @@ func TestRunTaskChainMustFail(t *testing.T) {
 		},
 	}
 
-	taskChain, err := NewTaskChain(dogfile, "must-fail")
+	taskChain, err := NewTaskChain(dtasks, "must-fail")
 	if err != nil {
 		t.Fatalf("Failed generating a task chain: %v", err)
 	}
@@ -79,7 +79,7 @@ func TestRunTaskChainMustFail(t *testing.T) {
 }
 
 func TestRunTaskChainMultipleHooks(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"pre-task": {
 				Name:        "pre-task",
@@ -110,7 +110,7 @@ func TestRunTaskChainMultipleHooks(t *testing.T) {
 		},
 	}
 
-	taskChain, err := NewTaskChain(dogfile, "main")
+	taskChain, err := NewTaskChain(dtasks, "main")
 	if err != nil {
 		t.Fatalf("Failed generating a task chain: %v", err)
 	}
@@ -126,7 +126,7 @@ func TestRunTaskChainMultipleHooks(t *testing.T) {
 }
 
 func TestRunTaskChainNoRunner(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"foo": {
 				Name:        "foo",
@@ -136,7 +136,7 @@ func TestRunTaskChainNoRunner(t *testing.T) {
 		},
 	}
 
-	taskChain, err := NewTaskChain(dogfile, "foo")
+	taskChain, err := NewTaskChain(dtasks, "foo")
 	if err != nil {
 		t.Fatalf("Failed generating a task chain: %v", err)
 	}
@@ -147,7 +147,7 @@ func TestRunTaskChainNoRunner(t *testing.T) {
 }
 
 func TestRunTaskChainUnsupportedRunner(t *testing.T) {
-	dogfile := Dogfile{
+	dtasks := Dogtasks{
 		Tasks: map[string]*Task{
 			"foo": {
 				Name:        "foo",
@@ -158,7 +158,7 @@ func TestRunTaskChainUnsupportedRunner(t *testing.T) {
 		},
 	}
 
-	taskChain, err := NewTaskChain(dogfile, "foo")
+	taskChain, err := NewTaskChain(dtasks, "foo")
 	if err != nil {
 		t.Fatalf("Failed generating a task chain: %v", err)
 	}

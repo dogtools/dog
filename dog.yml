@@ -1,3 +1,4 @@
+---
 - task: get-version
   code: grep "const version" cmd/dog/main.go | cut -d'"' -f2
   register: DOG_VERSION
@@ -33,7 +34,7 @@
 
 - task: build-all
   description: Build dog binary for all platforms
-  pre: 
+  pre:
     - clean
     - test
   env:

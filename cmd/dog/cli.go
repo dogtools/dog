@@ -4,7 +4,6 @@ import "fmt"
 
 type userArgs struct {
 	help      bool
-	workdir   string
 	directory string
 	version   bool
 	info      bool
@@ -15,7 +14,6 @@ type userArgs struct {
 
 var knownFlags = [...]string{
 	"-i", "--info",
-	"-w", "--workdir",
 	"-h", "--help",
 	"-v", "--version",
 	"-d", "--directory",
@@ -34,7 +32,6 @@ func printHelp() {
 Dog is a command line application that executes tasks.
 Options:
   -i, --info       Print execution info (duration, exit status) after task execution
-  -w, --workdir    Specify the working directory
   -d, --directory  Specify the dogfiles' directory
   -h, --help       Print usage information and help
   -v, --version    Print version information
@@ -52,7 +49,6 @@ func parseArgs(args []string) (a userArgs, err error) {
 	// default values
 	a = userArgs{
 		help:      false,
-		workdir:   "",
 		directory: "",
 		version:   false,
 		info:      false,
@@ -101,12 +97,6 @@ func parseArgs(args []string) (a userArgs, err error) {
 			} else {
 				return a, fmt.Errorf("Error: %s is not a valid task argument", arg)
 			}
-		}
-
-		if arg == "--workdir" || arg == "-w" {
-			next := i + 1
-			a.workdir = args[next]
-			skipArgument = true
 		}
 
 		if arg == "--directory" || arg == "-d" {

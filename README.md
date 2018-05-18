@@ -10,7 +10,7 @@
 
 # Dog
 
-Dog is a command line application that executes automated tasks. It works in a similar way as GNU Make but it is a more generic task runner, not a build tool. Dog's default script syntax is `sh` but most interpreted languages like BASH, Python or Ruby can also be used.
+Dog is a command line application that executes automated tasks.
 
 ## Using Dog
 
@@ -28,9 +28,9 @@ Execute a task, printing elapsed time and exit status
 
 ## What is a Dogfile?
 
-Dogfile is a specification that uses YAML to describe the tasks related to a project. We think that the Spec will be finished (no further breaking changes) by the v1.0.0 version of Dog.
+Dogfile is a specification that uses YAML to describe the tasks related to a project. We think that the specification will be finished (no further breaking changes) by the v1.0.0 version of Dog.
 
-- Read Dog's own [Dogfile.yml][1]
+- Read Dog's own [dog.yml][1]
 - Read the [Dogfile Spec][2]
 
 ## Installing Dog
@@ -58,7 +58,7 @@ Check the `examples/` directory to see how it works.
 
 If you want to help, take a look at the open [bugs][3], the list of all [issues][4] and our [Code of Conduct][5].
 
-[1]: https://github.com/dogtools/dog/blob/master/Dogfile.yml
+[1]: https://github.com/dogtools/dog/blob/master/dog.yml
 [2]: https://github.com/dogtools/dog/blob/master/DOGFILE_SPEC.md
 [3]: https://github.com/dogtools/dog/issues?q=is%3Aissue+is%3Aopen+label%3Abug
 [4]: https://github.com/dogtools/dog/issues

@@ -1,8 +1,8 @@
-# Dogfile Spec
+# Dogfile Specification
 
 *NOTE: This document is a draft and will probably change in the future. Most of its content is still open to discussion.*
 
-[Dog](https://github.com/dogtools/dog) is the first tool that uses Dogfiles and is developed at the same time as the Dogfile Spec itself.
+[Dog](https://github.com/dogtools/dog) is the first tool that uses a Dogfile and is developed at the same time as the Dogfile specification itself.
 
 ## File Format
 
@@ -18,7 +18,7 @@ Dogfiles are [YAML](http://yaml.org/) files that describe the execution of autom
   code: echo bye
 ```
 
-Multiple Dogfiles in the same directory are processed together as a single entity. Although the name `Dogfile.yml` is recommended, any file with a name that starts with `Dogfile` and follows this specification is a valid Dogfile.
+Multiple Dogfiles in the same directory are processed together as a single entity. Although the name `dog.yml` is recommended, any file with a name that starts with `dog` and ends with `.yml` or `.yaml` is a valid Dogfile as long as it follows this specification.
 
 ## Task definition
 
@@ -54,33 +54,31 @@ Multiline scripts are supported.
   code: |
     echo "This is the Dogfile in your current directory:"
 
-    for dogfile in `ls -1 Dogfile*`; do
+    for dogfile in `ls -1 dog*yml`; do
       cat $dogfile
     done
 ```
 
 ### runner
 
-When this directive is not defined, the default runner is `sh`. Additional runners are supported if they are present in the system. The following example uses the Ruby runner to print 'Hello World'.
+When this directive is not defined, the default runner is `sh`. Additional runners are supported if they are present in the system. The following example uses the Bash runner to print 'Hello World'.
 
 ```yml
-- task: hello-ruby
-  description: Hello World from Ruby
-  runner: ruby
+- task: bash-loop
+  description: For loop ion Bash
+  runner: bash
   code: |
-    hello = "Hello World"
-    puts hello
+    # this code includes a bashism may fail in some
+    # systems with a standard implementation of sh
+    for ((i=0; i<3; i++)); do
+      echo "$i"
+    done
 ```
 
 The following list of runners are supported:
 
 - sh
 - bash
-- python
-- ruby
-- perl
-- nodejs
-- go
 
 ### pre
 
@@ -117,7 +115,7 @@ Arrays are also accepted for multi task post-hooks.
 
 ### workdir
 
-Sets the working directory for the task. Relative paths are considered relative to the location of the Dogfile.
+Sets the working directory for the task. Relative paths are considered relative to the location of the Dogfile. The default workdir is the Dogfile location.
 
 ```yml
   workdir: ./app/

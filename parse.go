@@ -3,7 +3,6 @@ package dog
 import (
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -13,6 +12,9 @@ import (
 	"github.com/ghodss/yaml"
 )
 
+// DefaultRunner defines the runner to use in case the task does not specify it.
+var DefaultRunner = "sh"
+
 // ErrMalformedStringArray means that a task have a value of
 // pre, post or env that can't be parsed as an array of strings.
 var ErrMalformedStringArray = errors.New("Malformed strings array")
@@ -21,8 +23,8 @@ var ErrMalformedStringArray = errors.New("Malformed strings array")
 // a Dogfile in the specified directory.
 var ErrNoDogfile = errors.New("No dogfile found")
 
-// Dogfile contains tasks defined in the Dogfile format.
-type Dogfile struct {
+// Dogtasks is a collection of tasks with optional metadata from the runtime.
+type Dogtasks struct {
 
 	// Tasks is used to map task objects by their name.
 	Tasks map[string]*Task
@@ -32,7 +34,7 @@ type Dogfile struct {
 	Path string
 
 	// Files is an optional field that stores the full path
-	// of each Dogfile used to define the Dogfile object.
+	// of each Dogfile used to define the Dogtasks object.
 	Files []string
 }
 
@@ -56,7 +58,7 @@ type taskYAML struct {
 }
 
 // Parse accepts a slice of bytes and parses it following the Dogfile Spec.
-func Parse(p []byte) (dogfile Dogfile, err error) {
+func Parse(p []byte) (dtasks Dogtasks, err error) {
 	var tasks []*taskYAML
 
 	err = yaml.Unmarshal(p, &tasks)
@@ -65,7 +67,7 @@ func Parse(p []byte) (dogfile Dogfile, err error) {
 	}
 
 	for _, parsedTask := range tasks {
-		if _, ok := dogfile.Tasks[parsedTask.Name]; ok {
+		if _, ok := dtasks.Tasks[parsedTask.Name]; ok {
 			err = fmt.Errorf("Duplicated task name %s", parsedTask.Name)
 			return
 		} else if !validTaskName(parsedTask.Name) {
@@ -93,48 +95,22 @@ func Parse(p []byte) (dogfile Dogfile, err error) {
 				return
 			}
 
-			// backwards compatibility support for 'run' and 'exec', now called
-			// 'code' and 'runner' respectively.
-			if parsedTask.Code == "" && parsedTask.Run != "" {
-				deprecationWarningRun = true
-				task.Code = parsedTask.Run
-			}
-			if parsedTask.Runner == "" && parsedTask.Exec != "" {
-				deprecationWarningExec = true
-				task.Runner = parsedTask.Exec
-			}
-
 			// set default runner if not specified
 			if task.Runner == "" {
 				task.Runner = DefaultRunner
 			}
 
-			if dogfile.Tasks == nil {
-				dogfile.Tasks = make(map[string]*Task)
+			if dtasks.Tasks == nil {
+				dtasks.Tasks = make(map[string]*Task)
 			}
-			dogfile.Tasks[task.Name] = task
+			dtasks.Tasks[task.Name] = task
 		}
 	}
 
-	// validate resulting dogfile
-	err = dogfile.Validate()
+	// validate resulting dogtasks object
+	err = dtasks.Validate()
 
 	return
-}
-
-// DeprecationWarnings writes deprecation warnings if they have been found on
-// parse time.
-//
-// Call it with os.Stderr as a parameter to print warnings to STDERR.
-func DeprecationWarnings(w io.Writer) {
-	if deprecationWarningRun {
-		fmt.Fprintln(w,
-			"dog: 'run' directive will be deprecated in v0.6.0, use 'code' instead.")
-	}
-	if deprecationWarningExec {
-		fmt.Fprintln(w,
-			"dog: 'exec' directive will be deprecated in v0.6.0, use 'runner' instead.")
-	}
 }
 
 // parseStringSlice takes an interface from a pre, post or env field
@@ -161,7 +137,7 @@ func parseStringSlice(str interface{}) ([]string, error) {
 }
 
 // ParseFromDisk finds a Dogfile in disk and parses it.
-func ParseFromDisk(dir string) (dogfile Dogfile, err error) {
+func ParseFromDisk(dir string) (dtasks Dogtasks, err error) {
 	if dir == "" {
 		dir = "."
 	}
@@ -169,21 +145,24 @@ func ParseFromDisk(dir string) (dogfile Dogfile, err error) {
 	if err != nil {
 		return
 	}
-	dogfile.Path = dir
 
-	dogfile.Files, err = FindDogfiles(dir)
+	dtasks.Files, err = FindDogfiles(dir)
 	if err != nil {
 		return
 	}
-	if len(dogfile.Files) == 0 {
+	if len(dtasks.Files) == 0 {
 		err = ErrNoDogfile
+		return
+	}
+	dtasks.Path, err = filepath.Abs(filepath.Dir(dtasks.Files[0]))
+	if err != nil {
 		return
 	}
 
 	// iterate over every found file
-	for _, file := range dogfile.Files {
+	for _, file := range dtasks.Files {
 		var fileData []byte
-		var d Dogfile
+		var d Dogtasks
 
 		fileData, err = ioutil.ReadFile(file)
 		if err != nil {
@@ -198,15 +177,23 @@ func ParseFromDisk(dir string) (dogfile Dogfile, err error) {
 
 		// add parsed tasks to main dogfile
 		for _, t := range d.Tasks {
-			if dogfile.Tasks == nil {
-				dogfile.Tasks = make(map[string]*Task)
+			if dtasks.Tasks == nil {
+				dtasks.Tasks = make(map[string]*Task)
 			}
-			dogfile.Tasks[t.Name] = t
+			if t.Workdir == "" {
+				t.Workdir = dtasks.Path
+			} else {
+				t.Workdir, err = filepath.Abs(t.Workdir)
+				if err != nil {
+					return
+				}
+			}
+			dtasks.Tasks[t.Name] = t
 		}
 	}
 
 	// validate resulting dogfile
-	err = dogfile.Validate()
+	err = dtasks.Validate()
 
 	return
 }
@@ -215,14 +202,14 @@ func ParseFromDisk(dir string) (dogfile Dogfile, err error) {
 //
 // It checks if any task has a non standard name and also if the
 // resulting task chain of each of them have an undesired cycle.
-func (dogfile *Dogfile) Validate() error {
-	for _, t := range dogfile.Tasks {
+func (dtasks *Dogtasks) Validate() error {
+	for _, t := range dtasks.Tasks {
 
 		if !validTaskName(t.Name) {
 			return fmt.Errorf("Invalid name for task %s", t.Name)
 		}
 
-		if _, err := NewTaskChain(*dogfile, t.Name); err != nil {
+		if _, err := NewTaskChain(*dtasks, t.Name); err != nil {
 			return err
 		}
 
@@ -273,7 +260,7 @@ func FindDogfiles(p string) ([]string, error) {
 // by the Dogfile Spec.
 func validDogfileName(name string) bool {
 	var match bool
-	match, err := regexp.MatchString("^(Dogfile|🐕)", name)
+	match, err := regexp.MatchString("^(dog|🐕).*\\.(yml|yaml)$", name)
 	if err != nil {
 		return false
 	}
