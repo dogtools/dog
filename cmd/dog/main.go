@@ -40,7 +40,7 @@ func main() {
 		printNoValidDogfile()
 		os.Exit(1)
 	}
-	dog.DeprecationWarnings(os.Stderr)
+
 	if a.debug {
 		fmt.Fprintf(os.Stderr, "[dog-debug] path: %s\n", dogfile.Path)
 		fmt.Fprintf(os.Stderr, "[dog-debug] dogfiles: %v\n", dogfile.Files)

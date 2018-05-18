@@ -3,7 +3,6 @@ package dog
 import (
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -12,6 +11,9 @@ import (
 
 	"github.com/ghodss/yaml"
 )
+
+// DefaultRunner defines the runner to use in case the task does not specify it.
+var DefaultRunner = "sh"
 
 // ErrMalformedStringArray means that a task have a value of
 // pre, post or env that can't be parsed as an array of strings.
@@ -93,17 +95,6 @@ func Parse(p []byte) (dogfile Dogfile, err error) {
 				return
 			}
 
-			// backwards compatibility support for 'run' and 'exec', now called
-			// 'code' and 'runner' respectively.
-			if parsedTask.Code == "" && parsedTask.Run != "" {
-				deprecationWarningRun = true
-				task.Code = parsedTask.Run
-			}
-			if parsedTask.Runner == "" && parsedTask.Exec != "" {
-				deprecationWarningExec = true
-				task.Runner = parsedTask.Exec
-			}
-
 			// set default runner if not specified
 			if task.Runner == "" {
 				task.Runner = DefaultRunner
@@ -120,21 +111,6 @@ func Parse(p []byte) (dogfile Dogfile, err error) {
 	err = dogfile.Validate()
 
 	return
-}
-
-// DeprecationWarnings writes deprecation warnings if they have been found on
-// parse time.
-//
-// Call it with os.Stderr as a parameter to print warnings to STDERR.
-func DeprecationWarnings(w io.Writer) {
-	if deprecationWarningRun {
-		fmt.Fprintln(w,
-			"dog: 'run' directive will be deprecated in v0.6.0, use 'code' instead.")
-	}
-	if deprecationWarningExec {
-		fmt.Fprintln(w,
-			"dog: 'exec' directive will be deprecated in v0.6.0, use 'runner' instead.")
-	}
 }
 
 // parseStringSlice takes an interface from a pre, post or env field

@@ -13,6 +13,10 @@ import (
 	"github.com/dogtools/dog/run"
 )
 
+// ProvideExtraInfo specifies if dog needs to provide execution info (duration,
+// exit status) after task execution.
+var ProvideExtraInfo bool
+
 // ErrCycleInTaskChain means that there is a loop in the path of tasks execution.
 var ErrCycleInTaskChain = errors.New("TaskChain includes a cycle of tasks")
 
