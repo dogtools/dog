@@ -101,7 +101,7 @@ func printTasks(dtasks dog.Dogtasks) {
 
 	for _, taskName := range tasks {
 		separator := strings.Repeat(" ", maxCharSize-len(taskName)+2)
-		fmt.Printf("%s%s%s %s\n", taskName, separator, dtasks.Tasks[taskName].Description, dtasks.Tasks[taskName].Workdir)
+		fmt.Printf("%s%s%s\n", taskName, separator, dtasks.Tasks[taskName].Description)
 		if len(dtasks.Tasks[taskName].Pre) > 0 {
 			taskSpace := strings.Repeat(" ", len(taskName))
 			fmt.Printf("%s%s  <= %s\n", taskSpace, separator, strings.Join(dtasks.Tasks[taskName].Pre[:], " "))
