@@ -97,16 +97,6 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 			runner, err = run.NewShRunner(t.Code, t.Workdir, env)
 		case "bash":
 			runner, err = run.NewBashRunner(t.Code, t.Workdir, env)
-		case "python":
-			runner, err = run.NewPythonRunner(t.Code, t.Workdir, env)
-		case "ruby":
-			runner, err = run.NewRubyRunner(t.Code, t.Workdir, env)
-		case "perl":
-			runner, err = run.NewPerlRunner(t.Code, t.Workdir, env)
-		case "nodejs":
-			runner, err = run.NewNodejsRunner(t.Code, t.Workdir, env)
-		case "go":
-			runner, err = run.NewGoRunner(t.Code, t.Workdir, env)
 		default:
 			if t.Runner == "" {
 				return errors.New("Runner not specified")
