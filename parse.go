@@ -249,7 +249,7 @@ func FindDogfiles(p string) ([]string, error) {
 // by the Dogfile Spec.
 func validDogfileName(name string) bool {
 	var match bool
-	match, err := regexp.MatchString("^(dog|🐕)", name)
+	match, err := regexp.MatchString("^(dog|🐕).*\\.(yml|yaml)$", name)
 	if err != nil {
 		return false
 	}
