@@ -145,7 +145,6 @@ func ParseFromDisk(dir string) (dtasks Dogtasks, err error) {
 	if err != nil {
 		return
 	}
-	dtasks.Path = dir
 
 	dtasks.Files, err = FindDogfiles(dir)
 	if err != nil {
@@ -153,6 +152,10 @@ func ParseFromDisk(dir string) (dtasks Dogtasks, err error) {
 	}
 	if len(dtasks.Files) == 0 {
 		err = ErrNoDogfile
+		return
+	}
+	dtasks.Path, err = filepath.Abs(filepath.Dir(dtasks.Files[0]))
+	if err != nil {
 		return
 	}
 
@@ -176,6 +179,14 @@ func ParseFromDisk(dir string) (dtasks Dogtasks, err error) {
 		for _, t := range d.Tasks {
 			if dtasks.Tasks == nil {
 				dtasks.Tasks = make(map[string]*Task)
+			}
+			if t.Workdir == "" {
+				t.Workdir = dtasks.Path
+			} else {
+				t.Workdir, err = filepath.Abs(t.Workdir)
+				if err != nil {
+					return
+				}
 			}
 			dtasks.Tasks[t.Name] = t
 		}

@@ -51,14 +51,7 @@ func main() {
 			dog.ProvideExtraInfo = true
 		}
 
-		if dtasks.Tasks[a.taskName] != nil {
-			if a.workdir != "" {
-				dtasks.Tasks[a.taskName].Workdir = a.workdir
-			}
-			if dtasks.Tasks[a.taskName].Workdir == "" {
-				dtasks.Tasks[a.taskName].Workdir = a.directory
-			}
-		} else {
+		if dtasks.Tasks[a.taskName] == nil {
 			fmt.Println("Unknown task name:", a.taskName)
 			os.Exit(1)
 		}
@@ -108,7 +101,7 @@ func printTasks(dtasks dog.Dogtasks) {
 
 	for _, taskName := range tasks {
 		separator := strings.Repeat(" ", maxCharSize-len(taskName)+2)
-		fmt.Printf("%s%s%s\n", taskName, separator, dtasks.Tasks[taskName].Description)
+		fmt.Printf("%s%s%s %s\n", taskName, separator, dtasks.Tasks[taskName].Description, dtasks.Tasks[taskName].Workdir)
 		if len(dtasks.Tasks[taskName].Pre) > 0 {
 			taskSpace := strings.Repeat(" ", len(taskName))
 			fmt.Printf("%s%s  <= %s\n", taskSpace, separator, strings.Join(dtasks.Tasks[taskName].Pre[:], " "))
