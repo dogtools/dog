@@ -10,13 +10,12 @@ func TestValidDogfileName(t *testing.T) {
 		input  string
 		expect bool
 	}{
-		{"Dogfile.yml", true},
-		{"Dogfile.yaml", true},
-		{"Dogfile", true},
+		{"dog.yml", true},
+		{"dog.yaml", true},
 		{"🐕.yml", true},
-		{"Dogfile-foo.yml", true},
-		{"dogfile.yml", false},
-		{"DogFile.yml:", false},
+		{"dog-foo.yml", true},
+		{"Dog.yml", false},
+		{"Dog.yaml:", false},
 	} {
 		if got, want := validDogfileName(test.input), test.expect; got != want {
 			t.Errorf("Test %d (%s): expected %v but was %v", i, test.input, want, got)
