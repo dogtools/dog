@@ -5,13 +5,13 @@ package run
 import (
 	"bytes"
 	"fmt"
-	"io"
+	"os"
 	"strings"
 	"testing"
 )
 
 func TestShRunner(t *testing.T) {
-	runner, err := NewShRunner(`echo "Hello $RUNNER"`, ".", []string{"RUNNER=sh"})
+	runner, err := NewShRunner(`echo "Hello $RUNNER"`, ".", []string{"RUNNER=sh"}, os.Stdin, os.Stdout, os.Stderr)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -26,7 +26,7 @@ func TestShRunner(t *testing.T) {
 }
 
 func TestBashRunner(t *testing.T) {
-	runner, err := NewBashRunner(`echo "Hello $RUNNER"`, ".", []string{"RUNNER=bash"})
+	runner, err := NewBashRunner(`echo "Hello $RUNNER"`, ".", []string{"RUNNER=bash"}, os.Stdin, os.Stdout, os.Stderr)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -46,7 +46,7 @@ func getOutputString(runner Runner) (outputString string, err error) {
 	if err != nil {
 		return outputString, fmt.Errorf("%s: %s", err, runErr)
 	}
-	go io.Copy(output, runOut)
+	//go io.Copy(output, runOut)
 	err = runner.Start()
 	if err != nil {
 		return

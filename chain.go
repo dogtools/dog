@@ -1,10 +1,10 @@
 package dog
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os/exec"
 	"strings"
 	"syscall"
@@ -91,16 +91,16 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 	for _, t := range taskChain.Tasks {
 		var err error
 		var runner run.Runner
-		register := new(bytes.Buffer)
+		//register := new(bytes.Buffer)
 
 		exitStatus := 0
 		env := append(t.Env, registers...)
 
 		switch t.Runner {
 		case "sh":
-			runner, err = run.NewShRunner(t.Code, t.Workdir, env)
+			runner, err = run.NewShRunner(t.Code, t.Workdir, env, nil, stdout, stderr)
 		case "bash":
-			runner, err = run.NewBashRunner(t.Code, t.Workdir, env)
+			runner, err = run.NewBashRunner(t.Code, t.Workdir, env, nil, stdout, stderr)
 		default:
 			if t.Runner == "" {
 				return errors.New("Runner not specified")
@@ -111,17 +111,22 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 			return err
 		}
 
-		runOut, runErr, err := run.GetOutputs(runner)
+		runOut, _, err := run.GetOutputs(runner)
 		if err != nil {
 			return err
 		}
 
-		if t.Register == "" {
-			go io.Copy(stdout, runOut)
-		} else {
-			go io.Copy(register, runOut)
+		// if t.Register == "" {
+		// 	go io.Copy(stdout, runOut)
+		// } else {
+		// 	go io.Copy(register, runOut)
+		// }
+		// go io.Copy(stderr, runErr)
+		var register []byte
+		register, err = ioutil.ReadAll(runOut)
+		if err != nil {
+			return err
 		}
-		go io.Copy(stderr, runErr)
 
 		startTime = time.Now()
 		err = runner.Start()
@@ -146,7 +151,7 @@ func (taskChain *TaskChain) Run(stdout, stderr io.Writer) error {
 		}
 
 		if t.Register != "" {
-			r := fmt.Sprintf("%s=%s", t.Register, register.String())
+			r := fmt.Sprintf("%s=%s", t.Register, string(register))
 			registers = append(registers, strings.TrimSpace(r))
 		}
 

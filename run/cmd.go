@@ -3,6 +3,7 @@ package run
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -22,6 +23,9 @@ type runCmdProperties struct {
 	code          string
 	workdir       string
 	env           []string
+	stdin         io.Writer
+	stdout        io.Writer
+	stderr        io.Writer
 }
 
 // Wait waits until the command finishes running and provides exit information.
@@ -80,6 +84,8 @@ func newCmdRunner(p runCmdProperties) (Runner, error) {
 	cmd.Env = append(cmd.Env, os.Environ()...)
 	cmd.Env = append(cmd.Env, p.env...)
 	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
 	return &cmd, nil
 }

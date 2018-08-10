@@ -1,7 +1,7 @@
 package run
 
 import (
-	"bufio"
+	"bytes"
 	"io"
 )
 
@@ -26,24 +26,30 @@ type Runner interface {
 }
 
 // NewShRunner creates a system standard shell script runner.
-func NewShRunner(code string, workdir string, env []string) (Runner, error) {
+func NewShRunner(code string, workdir string, env []string, stdinHandler, stdoutHandler, stderrHandler io.Writer) (Runner, error) {
 	return newCmdRunner(runCmdProperties{
 		runner:        "sh",
 		fileExtension: ".sh",
 		code:          code,
 		workdir:       workdir,
 		env:           env,
+		stdin:         stdinHandler,
+		stdout:        stdoutHandler,
+		stderr:        stderrHandler,
 	})
 }
 
 // NewBashRunner creates a Bash runner.
-func NewBashRunner(code string, workdir string, env []string) (Runner, error) {
+func NewBashRunner(code string, workdir string, env []string, stdinHandler, stdoutHandler, stderrHandler io.Writer) (Runner, error) {
 	return newCmdRunner(runCmdProperties{
 		runner:        "bash",
 		fileExtension: ".sh",
 		code:          code,
 		workdir:       workdir,
 		env:           env,
+		stdin:         stdinHandler,
+		stdout:        stdoutHandler,
+		stderr:        stderrHandler,
 	})
 }
 
@@ -60,5 +66,6 @@ func GetOutputs(r Runner) (io.Reader, io.Reader, error) {
 		return nil, nil, err
 	}
 
-	return bufio.NewReader(stdout), bufio.NewReader(stderr), nil
+	var bufOut, bufErr bytes.Buffer
+	return io.TeeReader(stdout, &bufOut), io.TeeReader(stderr, &bufErr), nil
 }
