@@ -168,7 +168,7 @@ Registers store the output of tasks as environment variables so other tasks can 
   code: dog --version | awk '{print $3}'
   register: DOG_VERSION
 
-  task: print-dog-version
+- task: print-dog-version
   description: Print Dog version
   pre: get-dog-version
   code: echo "I am running Dog $DOG_VERSION"
